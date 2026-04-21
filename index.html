@@ -15,10 +15,10 @@
   --border2: #3f3f46;
   --accent: #60a5fa;
   --accent-dim: rgba(96,165,250,0.1);
-  --green: #4ade80;
-  --green-dim: rgba(74,222,128,0.1);
-  --red: #f87171;
-  --red-dim: rgba(248,113,113,0.1);
+  --green: #f87171;
+  --green-dim: rgba(248,113,113,0.1);
+  --red: #60a5fa;
+  --red-dim: rgba(96,165,250,0.1);
   --yellow: #fbbf24;
   --yellow-dim: rgba(251,191,36,0.1);
   --text: #fafafa;
@@ -53,7 +53,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .dashboard { padding: 28px 32px; border-bottom: 1px solid var(--border); background: var(--surface); }
 
 /* 통계 카드 그리드 */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
 .stat-card {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -89,7 +89,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
   background: var(--surface2);
   border: 1px solid var(--border2);
   border-radius: 6px;
-  color: var(--accent);
+  color: var(--text);
   padding: 4px 10px;
   font-size: 13px;
   font-family: 'Noto Sans KR', sans-serif;
@@ -114,16 +114,20 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .btn-green:hover { background: #86efac; }
 .btn-blue { background: var(--accent); color: #000; }
 .btn-blue:hover { background: #93c5fd; }
-.btn-red { background: var(--red); color: #fff; }
-.btn-red:hover { background: #fca5a5; }
+.btn-red { background: transparent; color: var(--text3); border: 1px solid var(--border2); }
+.btn-red:hover { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
 .btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
 .btn-ghost:hover { background: var(--surface3); color: var(--text); }
-.btn-yellow { background: var(--yellow); color: #000; }
-.btn-yellow:hover { background: #fcd34d; }
+.btn-yellow { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
+.btn-yellow:hover { background: var(--surface3); color: var(--text); }
 .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
 
 /* 테이블 */
-.table-wrap { overflow-x: auto; padding: 0 32px 32px; }
+.table-wrap { overflow-x: auto; padding: 0 32px 32px; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.table-wrap::-webkit-scrollbar { height: 6px; }
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--surface3); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
 thead th {
   color: var(--text3);
@@ -183,7 +187,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
   outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);
 }
-.form-group textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+.form-group textarea { resize: vertical; min-height: 64px; line-height: 1.5; overflow-y: hidden; scrollbar-width: none; }
+.form-group textarea::-webkit-scrollbar { display: none; }
 .form-group input[readonly] { color: var(--text2); background: var(--surface2); cursor: default; }
 .full { grid-column: 1 / -1; }
 
@@ -240,11 +245,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
   <div class="stats-grid">
     <div class="stat-card">
       <div class="label">누적 거래</div>
-      <div class="value blue" id="st-count">0건</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">누적 수익금</div>
-      <div class="value" id="st-profit">0원</div>
+      <div class="value" id="st-count">0건</div>
     </div>
     <div class="stat-card">
       <div class="label">누적 실수익금</div>
@@ -262,11 +263,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
       <select id="sel-year" class="period-select" onchange="updateStats()"></select>
       <span class="p-sep">|</span>
       <div class="period-stat">
-        <span class="p-label">수익금</span>
-        <span class="p-value" id="st-y-profit">0원</span>
-      </div>
-      <span class="p-sep">|</span>
-      <div class="period-stat">
         <span class="p-label">실수익금</span>
         <span class="p-value" id="st-y-real">0원</span>
       </div>
@@ -278,11 +274,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
     </div>
     <div class="period-card">
       <select id="sel-month" class="period-select" onchange="updateStats()"></select>
-      <span class="p-sep">|</span>
-      <div class="period-stat">
-        <span class="p-label">수익금</span>
-        <span class="p-value" id="st-m-profit">0원</span>
-      </div>
       <span class="p-sep">|</span>
       <div class="period-stat">
         <span class="p-label">실수익금</span>
@@ -348,17 +339,17 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
       <div class="form-section">
         <h3>외국인 동향</h3>
         <div class="form-grid">
-          <div class="form-group"><label>순매수 추세</label><input type="text" id="b-f-trend"></div>
-          <div class="form-group"><label>누적 순매수량</label><input type="text" id="b-f-total" placeholder="예: 91만주"></div>
-          <div class="form-group full"><label>매수 시작 시점 및 가격</label><input type="text" id="b-f-start" placeholder="예: 2월11일 / 48,000원"></div>
+          <div class="form-group"><label>순매수 추세</label><textarea spellcheck="false" id="b-f-trend"></textarea></div>
+          <div class="form-group"><label>누적 순매수량</label><textarea spellcheck="false" id="b-f-total" placeholder="예: 91만주"></textarea></div>
+          <div class="form-group full"><label>매수 시작 시점 및 가격</label><textarea spellcheck="false" id="b-f-start" placeholder="예: 2월11일 / 48,000원"></textarea></div>
         </div>
       </div>
       <div class="form-section">
         <h3>기관 동향</h3>
         <div class="form-grid">
-          <div class="form-group"><label>순매수 추세</label><input type="text" id="b-i-trend"></div>
-          <div class="form-group"><label>누적 순매수량</label><input type="text" id="b-i-total" placeholder="예: 600만주"></div>
-          <div class="form-group full"><label>매수 시작 시점 및 가격</label><input type="text" id="b-i-start" placeholder="예: 1월22일 / 45,750원"></div>
+          <div class="form-group"><label>순매수 추세</label><textarea spellcheck="false" id="b-i-trend"></textarea></div>
+          <div class="form-group"><label>누적 순매수량</label><textarea spellcheck="false" id="b-i-total" placeholder="예: 600만주"></textarea></div>
+          <div class="form-group full"><label>매수 시작 시점 및 가격</label><textarea spellcheck="false" id="b-i-start" placeholder="예: 1월22일 / 45,750원"></textarea></div>
         </div>
       </div>
       <div class="form-section">
@@ -375,9 +366,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
             </div>
           </div>
           <div class="form-group full"><label>기술적 분석</label><textarea spellcheck="false" id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
-          <div class="form-group"><label>상승 배율 (급등 종목만)</label><input type="text" id="b-rise" placeholder="예: 2달간 6배 상승"></div>
-          <div class="form-group"><label>주가 흐름</label><input type="text" id="b-flow" placeholder="예: 최저점 반등 후 횡보"></div>
-          <div class="form-group full"><label>모멘텀 훼손 원인</label><input type="text" id="b-momentum"></div>
+          <div class="form-group full"><label>상승 배율 (급등 종목만)</label><textarea spellcheck="false" id="b-rise" placeholder="예: 2달간 6배 상승"></textarea></div>
+          <div class="form-group full"><label>주가 흐름</label><textarea spellcheck="false" id="b-flow" placeholder="예: 최저점 반등 후 횡보"></textarea></div>
+          <div class="form-group full"><label>모멘텀 훼손 원인</label><textarea spellcheck="false" id="b-momentum"></textarea></div>
         </div>
       </div>
       <div class="form-section">
@@ -433,8 +424,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
       <div class="form-section">
         <h3>매도 근거</h3>
         <div class="form-grid">
-          <div class="form-group"><label>외국인 동향</label><input type="text" id="s-f-trend"></div>
-          <div class="form-group"><label>기관 동향</label><input type="text" id="s-i-trend"></div>
+          <div class="form-group"><label>외국인 동향</label><textarea spellcheck="false" id="s-f-trend"></textarea></div>
+          <div class="form-group"><label>기관 동향</label><textarea spellcheck="false" id="s-i-trend"></textarea></div>
           <div class="form-group full"><label>매도 근거</label><textarea spellcheck="false" id="s-reason"></textarea></div>
           <div class="form-group full"><label>예상과 달랐던 점</label><textarea spellcheck="false" id="s-diff"></textarea></div>
           <div class="form-group full"><label>반성 및 배움</label><textarea spellcheck="false" id="s-lesson"></textarea></div>
@@ -515,10 +506,10 @@ function renderTable() {
       tr.innerHTML = `
         <td><span class="num-chip">${total-i}</span></td>
         <td class="td-mono c-muted">${r.date}</td>
-        <td style="font-weight:600;color:var(--green)">${r.name}</td>
+        <td style="font-weight:600;color:var(--text)">${r.name}</td>
         <td><span class="badge badge-buy">▲ 매수</span></td>
         <td class="td-mono c-green">${r.price.toLocaleString()}원</td>
-        <td class="td-mono c-muted">${r.qty}주</td>
+        <td class="td-mono c-muted">${r.qty.toLocaleString()}주</td>
         <td class="c-dim">—</td>
         <td class="td-num c-dim">—</td>
         <td class="td-num c-dim">—</td>
@@ -533,10 +524,10 @@ function renderTable() {
       tr.innerHTML = `
         <td><span class="num-chip">${total-i}</span></td>
         <td class="td-mono c-muted">${r.date}</td>
-        <td style="font-weight:600;color:${isProfit?'var(--accent)':'var(--red)'}">${r.name}</td>
+        <td style="font-weight:600;color:var(--text)">${r.name}</td>
         <td><span class="badge ${isProfit?'badge-sell':'badge-loss'}">▼ 매도</span></td>
         <td class="td-mono ${isProfit?'c-blue':'c-red'}">${r.sellPrice.toLocaleString()}원</td>
-        <td class="td-mono c-muted">${r.qty}주</td>
+        <td class="td-mono c-muted">${r.qty.toLocaleString()}주</td>
         <td class="td-mono ${isProfit?'c-green':'c-red'} " style="font-weight:600">${r.profitRate}%</td>
         <td class="td-num ${isProfit?'c-green':'c-red'}" style="font-weight:700">${fmt(real)}</td>
         <td class="td-num" style="color:var(--yellow)">${fmt(fee)}</td>
@@ -581,9 +572,9 @@ function updateStats() {
   setCard('st-profit', total); setCard('st-real', totalReal);
   document.getElementById('st-fee').textContent = fmt(totalFee);
   setPeriod('st-y-profit', yProfit); setPeriod('st-y-real', yReal);
-  document.getElementById('st-y-fee').textContent = fmt(yFee);
+  document.getElementById('st-y-fee').textContent = fmt(yFee); document.getElementById('st-y-fee').style.color = 'var(--yellow)';
   setPeriod('st-m-profit', mProfit); setPeriod('st-m-real', mReal);
-  document.getElementById('st-m-fee').textContent = fmt(mFee);
+  document.getElementById('st-m-fee').textContent = fmt(mFee); document.getElementById('st-m-fee').style.color = 'var(--yellow)';
 }
 
 function calcDrop() {
@@ -620,11 +611,21 @@ function openBuyModal(idx=null) {
     document.getElementById('b-etc').value = g.etc||'';
     document.getElementById('b-target').value = r.target||'';
     document.getElementById('b-stop').value = r.stop||'';
+    setTimeout(() => {
+      document.querySelectorAll('#buy-modal textarea').forEach(t => {
+        t.style.height = 'auto';
+        t.style.height = t.scrollHeight + 'px';
+      });
+    }, 50);
   } else { clearBuyForm(); }
   document.getElementById('buy-modal').classList.add('active');
 }
 
-function closeBuyModal() { document.getElementById('buy-modal').classList.remove('active'); editIdx = null; }
+function closeBuyModal() { 
+  document.getElementById('buy-modal').classList.remove('active'); 
+  editIdx = null;
+  document.querySelectorAll('#buy-modal textarea').forEach(t => t.style.height = '');
+}
 
 function clearBuyForm() {
   ['b-name','b-price','b-qty','b-ratio','b-f-trend','b-f-total','b-f-start',
@@ -694,6 +695,12 @@ function openSellModal(idx=null) {
     document.getElementById('s-reason').value = r.reason||'';
     document.getElementById('s-diff').value = r.diff||'';
     document.getElementById('s-lesson').value = r.lesson||'';
+    setTimeout(() => {
+      document.querySelectorAll('#sell-modal textarea').forEach(t => {
+        t.style.height = 'auto';
+        t.style.height = t.scrollHeight + 'px';
+      });
+    }, 50);
   } else {
     combo.disabled = false;
     records.forEach((r,i) => {
@@ -702,7 +709,7 @@ function openSellModal(idx=null) {
       if (soldQty < r.qty) {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = `${r.name} | 매수가: ${r.price.toLocaleString()}원 | ${r.qty}주`;
+        opt.textContent = `${r.name} | 매수가: ${r.price.toLocaleString()}원 | ${r.qty.toLocaleString()}주`;
         combo.appendChild(opt);
       }
     });
@@ -712,7 +719,11 @@ function openSellModal(idx=null) {
   document.getElementById('sell-modal').classList.add('active');
 }
 
-function closeSellModal() { document.getElementById('sell-modal').classList.remove('active'); editIdx = null; }
+function closeSellModal() { 
+  document.getElementById('sell-modal').classList.remove('active'); 
+  editIdx = null;
+  document.querySelectorAll('#sell-modal textarea').forEach(t => t.style.height = '');
+}
 
 function clearSellForm() {
   ['s-price','s-qty','s-f-trend','s-i-trend','s-reason','s-diff','s-lesson'].forEach(id=>{
@@ -793,6 +804,14 @@ function showToast(msg) {
 }
 
 init();
+
+// textarea 자동 높이 조절
+document.addEventListener('input', e => {
+  if (e.target.tagName === 'TEXTAREA') {
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  }
+});
 </script>
 </body>
 </html>
