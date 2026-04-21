@@ -24,6 +24,7 @@
   --text: #fafafa;
   --text2: #a1a1aa;
   --text3: #71717a;
+  --text-mid: #d4d4d8;
   --radius: 12px;
   --radius-sm: 8px;
 }
@@ -212,9 +213,39 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .empty-state p { font-size: 15px; color: var(--text2); margin-bottom: 6px; }
 .empty-state small { font-size: 13px; color: var(--text3); }
 
+/* 미리보기 패널 */
+.preview-panel {
+  display: none;
+  position: fixed;
+  top: 0; right: 0;
+  width: 380px;
+  height: 100vh;
+  background: var(--surface);
+  border-left: 1px solid var(--border2);
+  z-index: 150;
+  overflow-y: auto;
+  animation: slideInRight 0.2s ease;
+}
+.preview-panel.active { display: block; }
+@keyframes slideInRight { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+.preview-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.preview-header h3 { font-size: 15px; font-weight: 700; }
+.preview-close { background: var(--surface2); border: none; color: var(--text2); cursor: pointer; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.preview-close:hover { background: var(--surface3); color: var(--text); }
+.preview-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.preview-section { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+.preview-section h4 { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; font-weight: 600; }
+.preview-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.preview-row:last-child { border-bottom: none; }
+.preview-row .p-key { color: var(--text3); min-width: 90px; flex-shrink: 0; }
+.preview-row .p-val { color: var(--text); text-align: right; font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+.preview-row .p-val.text { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; line-height: 1.6; }
+tbody tr { cursor: pointer; }
+tbody tr.selected { background: var(--surface) !important; outline: 1px solid var(--border2); }
+
 /* 토스트 */
-.toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 13px 18px; font-size: 13px; font-weight: 500; z-index: 300; animation: slideUp 0.2s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-@keyframes slideUp { from{transform:translateY(16px);opacity:0} to{transform:translateY(0);opacity:1} }
+.toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 13px 18px; font-size: 13px; font-weight: 500; z-index: 300; animation: slideDown 0.2s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); white-space: nowrap; }
+@keyframes slideDown { from{transform:translateX(-50%) translateY(-16px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
 
 /* 반응형 */
 @media(max-width:900px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
@@ -243,10 +274,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 <div class="dashboard">
   <!-- 누적 통계 카드 -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="label">누적 거래</div>
-      <div class="value" id="st-count">0건</div>
-    </div>
     <div class="stat-card">
       <div class="label">누적 실수익금</div>
       <div class="value" id="st-real">0원</div>
@@ -291,6 +318,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 <div class="action-bar">
   <button class="btn btn-green" onclick="openBuyModal()">📝 매수 기록</button>
   <button class="btn btn-blue" onclick="openSellModal()">💰 매도 기록</button>
+  <button class="btn btn-ghost" id="btn-all" onclick="toggleAll()">전체 보기</button>
 </div>
 
 <div class="table-wrap">
@@ -313,7 +341,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
   </table>
   <div id="empty-state" class="empty-state" style="display:none">
     <div class="empty-icon">📭</div>
-    <p>아직 기록이 없어요</p>
+    <p id="empty-msg">이번 달 기록이 없어요</p>
     <small>매수 기록 버튼을 눌러 첫 번째 기록을 추가해보세요</small>
   </div>
 </div>
@@ -439,10 +467,28 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
   </div>
 </div>
 
+<!-- 미리보기 패널 -->
+<div class="preview-panel" id="preview-panel">
+  <div class="preview-header">
+    <h3 id="preview-title">상세 정보</h3>
+    <button class="preview-close" onclick="closePreview()">×</button>
+  </div>
+  <div class="preview-body" id="preview-body"></div>
+</div>
+
 <script>
 const STORAGE_KEY = 'trading_records';
 let records = [];
 let editIdx = null;
+let showAll = false;
+
+function toggleAll() {
+  showAll = !showAll;
+  const btn = document.getElementById('btn-all');
+  btn.textContent = showAll ? '월별 보기' : '전체 보기';
+  btn.className = showAll ? 'btn btn-blue' : 'btn btn-ghost';
+  renderTable();
+}
 
 function init() {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -495,21 +541,48 @@ function renderTable() {
   const tbody = document.getElementById('record-table');
   const empty = document.getElementById('empty-state');
   tbody.innerHTML = '';
-  if (records.length === 0) { empty.style.display = 'block'; return; }
+
+  const selYear = parseInt(document.getElementById('sel-year').value);
+  const selMonth = parseInt(document.getElementById('sel-month').value);
+  const selectedMonth = `${selYear}-${String(selMonth).padStart(2,'0')}`;
+
+  const filtered = records.filter(r => {
+    if (showAll) return true;
+    return r.rawDate && r.rawDate.startsWith(selectedMonth);
+  });
+
+  const emptyMsg = document.getElementById('empty-msg');
+  if (filtered.length === 0) {
+    if (emptyMsg) emptyMsg.textContent = showAll ? '아직 기록이 없어요' : '이번 달 기록이 없어요';
+    empty.style.display = 'block';
+    return;
+  }
   empty.style.display = 'none';
 
-  const total = records.length;
-  [...records].reverse().forEach((r, i) => {
-    const realIdx = total - 1 - i;
+  // 보유중 종목 파악
+  const holdingSet = new Set();
+  records.forEach(r => {
+    if (r.type === 'buy') {
+      const soldQty = records.filter(s => s.type === 'sell' && s.name === r.name && s.buyDate === r.rawDate).reduce((a,s) => a + s.qty, 0);
+      if (soldQty < r.qty) holdingSet.add(r.name + r.rawDate);
+    }
+  });
+
+  [...filtered].reverse().forEach((r) => {
+    const realIdx = records.indexOf(r);
+    const num = realIdx + 1;
     const tr = document.createElement('tr');
+    const isHolding = r.type === 'buy' && holdingSet.has(r.name + r.rawDate);
+    const holdingBadge = isHolding ? `<span style="font-size:10px;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.25);border-radius:4px;padding:1px 6px;margin-left:6px">보유중</span>` : '';
+
     if (r.type === 'buy') {
       tr.innerHTML = `
-        <td><span class="num-chip">${total-i}</span></td>
+        <td><span class="num-chip">${num}</span></td>
         <td class="td-mono c-muted">${r.date}</td>
-        <td style="font-weight:600;color:var(--text)">${r.name}</td>
+        <td style="font-weight:600;color:var(--text)">${r.name}${holdingBadge}</td>
         <td><span class="badge badge-buy">▲ 매수</span></td>
         <td class="td-mono c-green">${r.price.toLocaleString()}원</td>
-        <td class="td-mono c-muted">${r.qty.toLocaleString()}주</td>
+        <td class="td-mono" style="color:var(--text-mid)">${r.qty.toLocaleString()}주</td>
         <td class="c-dim">—</td>
         <td class="td-num c-dim">—</td>
         <td class="td-num c-dim">—</td>
@@ -522,13 +595,13 @@ function renderTable() {
       const fee = r.fees ? r.fees.total : 0;
       const isProfit = real >= 0;
       tr.innerHTML = `
-        <td><span class="num-chip">${total-i}</span></td>
+        <td><span class="num-chip">${num}</span></td>
         <td class="td-mono c-muted">${r.date}</td>
         <td style="font-weight:600;color:var(--text)">${r.name}</td>
         <td><span class="badge ${isProfit?'badge-sell':'badge-loss'}">▼ 매도</span></td>
         <td class="td-mono ${isProfit?'c-blue':'c-red'}">${r.sellPrice.toLocaleString()}원</td>
-        <td class="td-mono c-muted">${r.qty.toLocaleString()}주</td>
-        <td class="td-mono ${isProfit?'c-green':'c-red'} " style="font-weight:600">${r.profitRate}%</td>
+        <td class="td-mono" style="color:var(--text-mid)">${r.qty.toLocaleString()}주</td>
+        <td class="td-mono ${isProfit?'c-green':'c-red'}" style="font-weight:600">${r.profitRate}%</td>
         <td class="td-num ${isProfit?'c-green':'c-red'}" style="font-weight:700">${fmt(real)}</td>
         <td class="td-num" style="color:var(--yellow)">${fmt(fee)}</td>
         <td><div style="display:flex;gap:6px">
@@ -537,10 +610,15 @@ function renderTable() {
         </div></td>`;
     }
     tbody.appendChild(tr);
+    tr.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      showPreview(realIdx, tr);
+    });
   });
 }
 
 function updateStats() {
+  renderTable();
   const selYear = parseInt(document.getElementById('sel-year').value);
   const selMonth = parseInt(document.getElementById('sel-month').value);
   const selectedYear = String(selYear);
@@ -568,7 +646,6 @@ function updateStats() {
     el.className = 'p-value ' + (val > 0 ? 'green' : val < 0 ? 'red' : '');
   };
 
-  document.getElementById('st-count').textContent = count + '건';
   setCard('st-profit', total); setCard('st-real', totalReal);
   document.getElementById('st-fee').textContent = fmt(totalFee);
   setPeriod('st-y-profit', yProfit); setPeriod('st-y-real', yReal);
@@ -786,6 +863,90 @@ function saveSell() {
 
 function editRecord(idx) {
   if (records[idx].type === 'buy') openBuyModal(idx); else openSellModal(idx);
+}
+
+function closePreview() {
+  document.getElementById('preview-panel').classList.remove('active');
+  document.querySelectorAll('tbody tr.selected').forEach(r => r.classList.remove('selected'));
+}
+
+function showPreview(idx, trEl) {
+  const r = records[idx];
+  if (!r) return;
+
+  // 선택 표시
+  document.querySelectorAll('tbody tr.selected').forEach(el => el.classList.remove('selected'));
+  trEl.classList.add('selected');
+
+  const panel = document.getElementById('preview-panel');
+  const body = document.getElementById('preview-body');
+  const title = document.getElementById('preview-title');
+
+  title.textContent = `${r.name} · ${r.type === 'buy' ? '▲ 매수' : '▼ 매도'}`;
+  body.innerHTML = '';
+
+  if (r.type === 'buy') {
+    const g = r.buyReason || {};
+    body.innerHTML = `
+      <div class="preview-section">
+        <h4>기본 정보</h4>
+        <div class="preview-row"><span class="p-key">날짜</span><span class="p-val">${r.date}</span></div>
+        <div class="preview-row"><span class="p-key">매수가</span><span class="p-val">${r.price.toLocaleString()}원</span></div>
+        <div class="preview-row"><span class="p-key">수량</span><span class="p-val">${r.qty.toLocaleString()}주</span></div>
+        <div class="preview-row"><span class="p-key">투자금액</span><span class="p-val">${(r.price*r.qty).toLocaleString()}원</span></div>
+        <div class="preview-row"><span class="p-key">예수금 대비</span><span class="p-val">${r.ratio||'-'}</span></div>
+        ${r.target ? `<div class="preview-row"><span class="p-key">목표가</span><span class="p-val">${r.target}</span></div>` : ''}
+        ${r.stop ? `<div class="preview-row"><span class="p-key">손절가</span><span class="p-val">${r.stop}</span></div>` : ''}
+      </div>
+      <div class="preview-section">
+        <h4>외국인 동향</h4>
+        ${g.fTrend ? `<div class="preview-row"><span class="p-key">순매수 추세</span><span class="p-val text">${g.fTrend}</span></div>` : ''}
+        ${g.fTotal ? `<div class="preview-row"><span class="p-key">누적 순매수량</span><span class="p-val">${g.fTotal}</span></div>` : ''}
+        ${g.fStart ? `<div class="preview-row"><span class="p-key">매수 시작</span><span class="p-val text">${g.fStart}</span></div>` : ''}
+      </div>
+      <div class="preview-section">
+        <h4>기관 동향</h4>
+        ${g.iTrend ? `<div class="preview-row"><span class="p-key">순매수 추세</span><span class="p-val text">${g.iTrend}</span></div>` : ''}
+        ${g.iTotal ? `<div class="preview-row"><span class="p-key">누적 순매수량</span><span class="p-val">${g.iTotal}</span></div>` : ''}
+        ${g.iStart ? `<div class="preview-row"><span class="p-key">매수 시작</span><span class="p-val text">${g.iStart}</span></div>` : ''}
+      </div>
+      <div class="preview-section">
+        <h4>기술적 분석</h4>
+        ${g.tech ? `<div class="preview-row"><span class="p-key">분석</span><span class="p-val text">${g.tech}</span></div>` : ''}
+        ${g.drop ? `<div class="preview-row"><span class="p-key">낙폭</span><span class="p-val">${g.drop}</span></div>` : ''}
+        ${g.rise ? `<div class="preview-row"><span class="p-key">상승 배율</span><span class="p-val text">${g.rise}</span></div>` : ''}
+        ${g.flow ? `<div class="preview-row"><span class="p-key">주가 흐름</span><span class="p-val text">${g.flow}</span></div>` : ''}
+        ${g.momentum ? `<div class="preview-row"><span class="p-key">모멘텀 훼손</span><span class="p-val text">${g.momentum}</span></div>` : ''}
+      </div>
+      <div class="preview-section">
+        <h4>시장 상황 및 기타</h4>
+        ${g.market ? `<div class="preview-row"><span class="p-key">시장 상황</span><span class="p-val text">${g.market}</span></div>` : ''}
+        ${g.etc ? `<div class="preview-row"><span class="p-key">기타</span><span class="p-val text">${g.etc}</span></div>` : ''}
+      </div>`;
+  } else {
+    const real = r.realProfit || 0;
+    const isProfit = real >= 0;
+    const color = isProfit ? 'var(--green)' : 'var(--red)';
+    body.innerHTML = `
+      <div class="preview-section">
+        <h4>매도 정보</h4>
+        <div class="preview-row"><span class="p-key">날짜</span><span class="p-val">${r.date}</span></div>
+        <div class="preview-row"><span class="p-key">매도가</span><span class="p-val">${r.sellPrice.toLocaleString()}원</span></div>
+        <div class="preview-row"><span class="p-key">수량</span><span class="p-val">${r.qty.toLocaleString()}주</span></div>
+        <div class="preview-row"><span class="p-key">수익률</span><span class="p-val" style="color:${color};font-weight:700">${r.profitRate}%</span></div>
+        <div class="preview-row"><span class="p-key">실수익금</span><span class="p-val" style="color:${color};font-weight:700">${fmt(real)}</span></div>
+        <div class="preview-row"><span class="p-key">수수료+세금</span><span class="p-val" style="color:var(--yellow)">${fmt(r.fees?.total)}</span></div>
+      </div>
+      <div class="preview-section">
+        <h4>매도 근거</h4>
+        ${r.fTrend ? `<div class="preview-row"><span class="p-key">외국인 동향</span><span class="p-val text">${r.fTrend}</span></div>` : ''}
+        ${r.iTrend ? `<div class="preview-row"><span class="p-key">기관 동향</span><span class="p-val text">${r.iTrend}</span></div>` : ''}
+        ${r.reason ? `<div class="preview-row"><span class="p-key">매도 근거</span><span class="p-val text">${r.reason}</span></div>` : ''}
+        ${r.diff ? `<div class="preview-row"><span class="p-key">예상과 달랐던 점</span><span class="p-val text">${r.diff}</span></div>` : ''}
+        ${r.lesson ? `<div class="preview-row"><span class="p-key">반성 및 배움</span><span class="p-val text">${r.lesson}</span></div>` : ''}
+      </div>`;
+  }
+  panel.classList.add('active');
 }
 
 function deleteRecord(idx) {
