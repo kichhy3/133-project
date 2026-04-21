@@ -374,7 +374,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
               <input type="text" id="b-drop" placeholder="결과" readonly>
             </div>
           </div>
-          <div class="form-group full"><label>기술적 분석</label><textarea id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
+          <div class="form-group full"><label>기술적 분석</label><textarea spellcheck="false" id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
           <div class="form-group"><label>상승 배율 (급등 종목만)</label><input type="text" id="b-rise" placeholder="예: 2달간 6배 상승"></div>
           <div class="form-group"><label>주가 흐름</label><input type="text" id="b-flow" placeholder="예: 최저점 반등 후 횡보"></div>
           <div class="form-group full"><label>모멘텀 훼손 원인</label><input type="text" id="b-momentum"></div>
@@ -383,8 +383,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
       <div class="form-section">
         <h3>시장 상황 및 기타</h3>
         <div class="form-grid">
-          <div class="form-group full"><label>시장 상황</label><textarea id="b-market"></textarea></div>
-          <div class="form-group full"><label>기타 매수 근거</label><textarea id="b-etc"></textarea></div>
+          <div class="form-group full"><label>시장 상황</label><textarea spellcheck="false" id="b-market"></textarea></div>
+          <div class="form-group full"><label>기타 매수 근거</label><textarea spellcheck="false" id="b-etc"></textarea></div>
           <div class="form-group"><label>목표가</label><input type="text" id="b-target" placeholder="없으면 비워두세요"></div>
           <div class="form-group"><label>손절가</label><input type="text" id="b-stop" placeholder="없으면 비워두세요"></div>
         </div>
@@ -435,9 +435,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
         <div class="form-grid">
           <div class="form-group"><label>외국인 동향</label><input type="text" id="s-f-trend"></div>
           <div class="form-group"><label>기관 동향</label><input type="text" id="s-i-trend"></div>
-          <div class="form-group full"><label>매도 근거</label><textarea id="s-reason"></textarea></div>
-          <div class="form-group full"><label>예상과 달랐던 점</label><textarea id="s-diff"></textarea></div>
-          <div class="form-group full"><label>반성 및 배움</label><textarea id="s-lesson"></textarea></div>
+          <div class="form-group full"><label>매도 근거</label><textarea spellcheck="false" id="s-reason"></textarea></div>
+          <div class="form-group full"><label>예상과 달랐던 점</label><textarea spellcheck="false" id="s-diff"></textarea></div>
+          <div class="form-group full"><label>반성 및 배움</label><textarea spellcheck="false" id="s-lesson"></textarea></div>
         </div>
       </div>
     </div>
@@ -791,10 +791,6 @@ function showToast(msg) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3000);
 }
-
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
-});
 
 init();
 </script>
