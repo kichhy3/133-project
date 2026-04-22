@@ -330,6 +330,7 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
       ⬆ 불러오기
       <input type="file" accept=".json" onchange="importData(event)" style="display:none">
     </label>
+    <button class="btn btn-ghost btn-sm" onclick="resetData()" style="color:var(--buy)">🗑️ 초기화</button>
   </div>
 </div>
 
@@ -960,6 +961,14 @@ function exportData() {
   a.download = `매매기록_${new Date().toISOString().split('T')[0]}.json`;
   a.click();
   showToast(`✅ 내보내기 완료! (${records.length}건)`);
+}
+
+function resetData() {
+  if (!confirm('⚠️ 모든 기록이 삭제됩니다.\n정말 초기화할까요?')) return;
+  if (!confirm('마지막 확인! 되돌릴 수 없어요. 계속할까요?')) return;
+  records = [];
+  saveData(); renderTable(); updateStats();
+  showToast('✅ 초기화 완료!');
 }
 
 function importData(e) {
