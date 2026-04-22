@@ -144,7 +144,7 @@ thead th {
 thead th:first-child { width: 48px; color: var(--text3); }
 tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
 tbody tr:hover { background: var(--surface); }
-tbody td { padding: 12px 14px; white-space: nowrap; }
+tbody td { padding: 14px 14px; white-space: nowrap; }
 .td-mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
 .td-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; }
 .c-green { color: var(--green); }
@@ -184,6 +184,9 @@ tbody td { padding: 12px 14px; white-space: nowrap; }
   color: var(--text); padding: 9px 12px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
   transition: border 0.15s, box-shadow 0.15s; width: 100%;
 }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
   outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);
@@ -209,9 +212,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 
 /* 빈 상태 */
 .empty-state { text-align: center; padding: 80px 20px; }
-.empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
-.empty-state p { font-size: 15px; color: var(--text2); margin-bottom: 6px; }
-.empty-state small { font-size: 13px; color: var(--text3); }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+.empty-state p { font-size: 15px; color: var(--text2); margin-bottom: 6px; font-weight: 500; }
+.empty-state small { font-size: 13px; color: var(--text3); display: block; margin-bottom: 20px; }
 
 /* 미리보기 패널 */
 .preview-panel {
@@ -243,7 +246,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 tbody tr { cursor: pointer; }
 tbody tr.selected { background: var(--surface) !important; outline: 1px solid var(--border2); }
 
-/* 토스트 */
+/* 뷰 탭 */
+.view-tabs { display: flex; background: var(--surface2); border-radius: 8px; padding: 3px; gap: 2px; margin-left: auto; }
+.view-tab { background: none; border: none; color: var(--text3); padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.15s; }
+.view-tab:hover { color: var(--text2); }
+.view-tab.active { background: var(--surface3); color: var(--text); }
 .toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 13px 18px; font-size: 13px; font-weight: 500; z-index: 300; animation: slideDown 0.2s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); white-space: nowrap; }
 @keyframes slideDown { from{transform:translateX(-50%) translateY(-16px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
 
@@ -251,14 +258,60 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
 @media(max-width:900px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
 @media(max-width:600px) {
   .header { padding: 0 16px; }
-  .dashboard { padding: 16px; }
-  .action-bar { padding: 12px 16px; }
+  .header-logo span { font-size: 15px; }
+  .dashboard { padding: 12px 16px; gap: 10px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 12px 14px; }
+  .stat-card .value { font-size: 16px; }
+  .stat-card .label { font-size: 10px; }
+  .period-row { grid-template-columns: 1fr; gap: 8px; }
+  .period-card { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
+  .p-sep { display: none; }
+  .period-stat { min-width: 80px; }
+  .action-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+  .view-tabs { order: 3; width: 100%; justify-content: center; }
+  .view-tab { flex: 1; text-align: center; }
+  .action-bar > div:last-child { order: 99; width: 100%; display: flex; gap: 8px; margin-top: 4px; }
+  .action-bar > div:last-child .btn { flex: 1; justify-content: center; }
+
+  /* 테이블 → 카드형으로 */
   .table-wrap { padding: 0 16px 24px; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .period-row { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
-  .modal-body { padding: 16px; }
+  table, thead, tbody, th, td, tr { display: block; }
+  thead { display: none; }
+  tbody tr {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 6px 12px;
+    align-items: center;
+  }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 0; border: none; white-space: normal; }
+
+  /* 카드 레이아웃 */
+  tbody td:nth-child(1) { grid-row: 1; grid-column: 1; }
+  tbody td:nth-child(2) { grid-row: 1; grid-column: 2; font-size: 12px; }
+  tbody td:nth-child(3) { grid-row: 2; grid-column: 1 / 3; font-size: 15px; }
+  tbody td:nth-child(4) { grid-row: 1; grid-column: 3; }
+  tbody td:nth-child(5) { grid-row: 3; grid-column: 1; font-size: 13px; }
+  tbody td:nth-child(6) { grid-row: 3; grid-column: 2; font-size: 13px; }
+  tbody td:nth-child(7) { grid-row: 3; grid-column: 3; font-size: 13px; font-weight: 700; }
+  tbody td:nth-child(8) { grid-row: 4; grid-column: 1 / 3; font-size: 14px; font-weight: 700; }
+  tbody td:nth-child(9) { grid-row: 4; grid-column: 3; font-size: 12px; }
+  tbody td:nth-child(10) { grid-row: 5; grid-column: 1 / 4; display: flex; gap: 8px; justify-content: flex-end; padding-top: 8px; border-top: 1px solid var(--border); margin-top: 4px; }
+  tbody td:nth-child(10) .btn { flex: 1; justify-content: center; }
+
+  .modal { border-radius: 12px 12px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-width: 100%; margin: 0; max-height: 90vh; }
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-body { padding: 16px; max-height: 70vh; }
   .modal-header, .modal-footer { padding: 14px 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .drop-calc { flex-wrap: wrap; }
+  .drop-calc input { min-width: 80px; }
 }
 </style>
 </head>
@@ -318,7 +371,18 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
 <div class="action-bar">
   <button class="btn btn-green" onclick="openBuyModal()">📝 매수 기록</button>
   <button class="btn btn-blue" onclick="openSellModal()">💰 매도 기록</button>
-  <button class="btn btn-ghost" id="btn-all" onclick="toggleAll()">전체 보기</button>
+  <div class="view-tabs">
+    <button class="view-tab active" id="tab-month" onclick="setViewMode('month')">월</button>
+    <button class="view-tab" id="tab-year" onclick="setViewMode('year')">연</button>
+    <button class="view-tab" id="tab-all" onclick="setViewMode('all')">전체</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-left:8px">
+    <button class="btn btn-ghost btn-sm" onclick="exportData()" title="데이터 내보내기">⬇ 내보내기</button>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0" title="데이터 불러오기">
+      ⬆ 불러오기
+      <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+    </label>
+  </div>
 </div>
 
 <div class="table-wrap">
@@ -343,6 +407,8 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
     <div class="empty-icon">📭</div>
     <p id="empty-msg">이번 달 기록이 없어요</p>
     <small>매수 기록 버튼을 눌러 첫 번째 기록을 추가해보세요</small>
+    <button class="btn btn-green" onclick="openBuyModal()" style="margin:0 auto">📝 매수 기록 추가</button>
+  </div>
   </div>
 </div>
 
@@ -361,7 +427,19 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
           <div class="form-group"><label>종목명</label><input type="text" id="b-name" placeholder="예: 삼성전자"></div>
           <div class="form-group"><label>매수가 (원)</label><input type="number" id="b-price" placeholder="0"></div>
           <div class="form-group"><label>수량 (주)</label><input type="number" id="b-qty" placeholder="0"></div>
-          <div class="form-group"><label>예수금 대비</label><input type="text" id="b-ratio" placeholder="예: 100%"></div>
+          <div class="form-group"><label>예수금 대비(%)</label>
+            <div style="position:relative;display:flex;align-items:center">
+              <input type="number" id="b-ratio" placeholder="100" min="0" max="100" step="0.1" style="padding-right:28px">
+              <span style="position:absolute;right:10px;color:var(--text2);font-size:13px;pointer-events:none">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3>목표가 / 손절가</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>목표가</label><input type="text" id="b-target" placeholder="없으면 비워두세요"></div>
+          <div class="form-group"><label>손절가</label><input type="text" id="b-stop" placeholder="없으면 비워두세요"></div>
         </div>
       </div>
       <div class="form-section">
@@ -383,6 +461,7 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
       <div class="form-section">
         <h3>기술적 분석</h3>
         <div class="form-grid">
+          <div class="form-group full"><label>기술적 분석</label><textarea spellcheck="false" id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
           <div class="form-group full">
             <label>최고점 → 최저점 낙폭 자동계산</label>
             <div class="drop-calc">
@@ -393,7 +472,6 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
               <input type="text" id="b-drop" placeholder="결과" readonly>
             </div>
           </div>
-          <div class="form-group full"><label>기술적 분석</label><textarea spellcheck="false" id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
           <div class="form-group full"><label>상승 배율 (급등 종목만)</label><textarea spellcheck="false" id="b-rise" placeholder="예: 2달간 6배 상승"></textarea></div>
           <div class="form-group full"><label>주가 흐름</label><textarea spellcheck="false" id="b-flow" placeholder="예: 최저점 반등 후 횡보"></textarea></div>
           <div class="form-group full"><label>모멘텀 훼손 원인</label><textarea spellcheck="false" id="b-momentum"></textarea></div>
@@ -404,8 +482,6 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
         <div class="form-grid">
           <div class="form-group full"><label>시장 상황</label><textarea spellcheck="false" id="b-market"></textarea></div>
           <div class="form-group full"><label>기타 매수 근거</label><textarea spellcheck="false" id="b-etc"></textarea></div>
-          <div class="form-group"><label>목표가</label><input type="text" id="b-target" placeholder="없으면 비워두세요"></div>
-          <div class="form-group"><label>손절가</label><input type="text" id="b-stop" placeholder="없으면 비워두세요"></div>
         </div>
       </div>
     </div>
@@ -480,13 +556,13 @@ tbody tr.selected { background: var(--surface) !important; outline: 1px solid va
 const STORAGE_KEY = 'trading_records';
 let records = [];
 let editIdx = null;
-let showAll = false;
+let viewMode = 'month'; // 'month' | 'year' | 'all'
 
-function toggleAll() {
-  showAll = !showAll;
-  const btn = document.getElementById('btn-all');
-  btn.textContent = showAll ? '월별 보기' : '전체 보기';
-  btn.className = showAll ? 'btn btn-blue' : 'btn btn-ghost';
+function setViewMode(mode) {
+  viewMode = mode;
+  ['month','year','all'].forEach(m => {
+    document.getElementById(`tab-${m}`).classList.toggle('active', m === mode);
+  });
   renderTable();
 }
 
@@ -545,15 +621,17 @@ function renderTable() {
   const selYear = parseInt(document.getElementById('sel-year').value);
   const selMonth = parseInt(document.getElementById('sel-month').value);
   const selectedMonth = `${selYear}-${String(selMonth).padStart(2,'0')}`;
+  const selectedYear = String(selYear);
 
   const filtered = records.filter(r => {
-    if (showAll) return true;
+    if (viewMode === 'all') return true;
+    if (viewMode === 'year') return r.rawDate && r.rawDate.startsWith(selectedYear);
     return r.rawDate && r.rawDate.startsWith(selectedMonth);
   });
 
   const emptyMsg = document.getElementById('empty-msg');
   if (filtered.length === 0) {
-    if (emptyMsg) emptyMsg.textContent = showAll ? '아직 기록이 없어요' : '이번 달 기록이 없어요';
+    if (emptyMsg) emptyMsg.textContent = viewMode === 'all' ? '아직 기록이 없어요' : viewMode === 'year' ? '이번 연도 기록이 없어요' : '이번 달 기록이 없어요';
     empty.style.display = 'block';
     return;
   }
@@ -671,7 +749,7 @@ function openBuyModal(idx=null) {
     document.getElementById('b-name').value = r.name;
     document.getElementById('b-price').value = r.price;
     document.getElementById('b-qty').value = r.qty;
-    document.getElementById('b-ratio').value = r.ratio||'';
+    document.getElementById('b-ratio').value = (r.ratio||'').replace('%','');
     const g = r.buyReason||{};
     document.getElementById('b-f-trend').value = g.fTrend||'';
     document.getElementById('b-f-total').value = g.fTotal||'';
@@ -722,7 +800,7 @@ function saveBuy() {
 
   const record = {
     type:'buy', rawDate, date:formatDate(rawDate), name, price, qty,
-    ratio: document.getElementById('b-ratio').value,
+    ratio: document.getElementById('b-ratio').value ? document.getElementById('b-ratio').value + '%' : '',
     target: document.getElementById('b-target').value,
     stop: document.getElementById('b-stop').value,
     buyReason: {
@@ -955,6 +1033,46 @@ function deleteRecord(idx) {
   records.splice(idx, 1);
   saveData(); renderTable(); updateStats();
   showToast('🗑️ 삭제 완료!');
+}
+
+function exportData() {
+  if (records.length === 0) { showToast('❌ 내보낼 기록이 없어요!'); return; }
+  const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `매매기록_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`✅ 내보내기 완료! (${records.length}건)`);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error();
+      if (!confirm(`${imported.length}건의 기록을 불러올까요?\n⚠️ 현재 기록에 추가됩니다.`)) return;
+      records = [...records, ...imported];
+      const seen = new Set();
+      records = records.filter(r => {
+        const key = r.savedAt || Math.random();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      saveData(); renderTable(); updateStats();
+      showToast(`✅ ${imported.length}건 불러오기 완료!`);
+    } catch {
+      showToast('❌ 올바른 JSON 파일이 아니에요!');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 function showToast(msg) {
