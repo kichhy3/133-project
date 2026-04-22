@@ -161,7 +161,10 @@ tbody td { padding: 14px; white-space: nowrap; font-family: 'JetBrains Mono', mo
 .form-group textarea { resize: vertical; min-height: 64px; line-height: 1.5; overflow-y: hidden; scrollbar-width: none; }
 .form-group textarea::-webkit-scrollbar { display: none; }
 .form-group input[readonly] { color: var(--text2); background: var(--surface2); cursor: default; }
-.ratio-wrap { position: relative; display: flex; align-items: center; }
+.section-toggle { cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+.section-toggle:hover { color: var(--text2); }
+.toggle-icon { font-size: 10px; color: var(--text3); transition: all .2s; }
+.section-body { margin-top: 14px; }
 .ratio-wrap input { padding-right: 28px; }
 .ratio-wrap .suffix { position: absolute; right: 10px; color: var(--text2); font-size: 13px; pointer-events: none; }
 .drop-calc { display: flex; gap: 8px; align-items: center; }
@@ -215,8 +218,8 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   .dashboard { padding: 12px 16px; }
   .stat-card .value { font-size: 16px; }
   .period-row { grid-template-columns: 1fr; gap: 8px; }
-  .period-card { padding: 10px 12px; gap: 8px; }
-  .period-card .period-stat { min-width: 80px; }
+  .period-card { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; }
+  .period-card .period-stat { min-width: 70px; flex-shrink: 0; }
   .p-sep { font-size: 12px; color: var(--border2); }
   .action-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
   .action-bar > .btn-buy,
@@ -229,25 +232,41 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   .table-wrap { padding: 0 16px 24px; }
   table, thead, tbody, th, td, tr { display: block; }
   thead { display: none; }
-  tbody tr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; padding: 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 6px 12px; }
-  tbody td { padding: 0; border: none; white-space: normal; }
-  tbody td:nth-child(7),
-  tbody td:nth-child(8),
-  tbody td:nth-child(9) { display: none; }
-  tbody td:nth-child(1) { grid-row:1; grid-column:1; }
-  tbody td:nth-child(2) { grid-row:1; grid-column:2; font-size:12px; }
-  tbody td:nth-child(4) { grid-row:1; grid-column:3; }
-  tbody td:nth-child(3) { grid-row:2; grid-column:1/3; font-size:15px; }
-  tbody td:nth-child(5) { grid-row:3; grid-column:1; }
-  tbody td:nth-child(6) { grid-row:3; grid-column:2; }
-  tbody td:nth-child(7) { grid-row:3; grid-column:3; font-weight:700; }
-  tbody td:nth-child(8) { grid-row:4; grid-column:1/3; font-size:14px; font-weight:700; }
-  tbody td:nth-child(9) { grid-row:4; grid-column:3; }
+  tbody tr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; padding: 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; }
+  tbody td { padding: 0; border: none; white-space: normal; display: none; }
+
+  /* 1줄: #, 날짜, 배지 */
+  tbody td:nth-child(1) { grid-column:1; grid-row:1; display:flex; align-items:center; }
+  tbody td:nth-child(2) { grid-column:2; grid-row:1; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--text2); }
+  tbody td:nth-child(4) { grid-column:3; grid-row:1; display:flex; align-items:center; justify-content:flex-end; }
+
+  /* 2줄: 종목명 */
+  tbody td:nth-child(3) { grid-column:1/4; grid-row:2; display:block; font-size:17px; font-weight:700; text-align:center; padding:6px 0 2px; }
+
+  /* 3줄: 가격 · 수량 (매수/매도 공통) */
+  tbody td:nth-child(5) { grid-column:1/4; grid-row:3; display:block; font-size:14px; text-align:center; padding:4px 0; border-top:1px dashed var(--border); }
+  tbody td:nth-child(5)::before { content:"가격 "; color:var(--text3); font-size:11px; font-family:'Noto Sans KR',sans-serif; }
+  tbody td:nth-child(6) { grid-column:1/4; grid-row:4; display:block; font-size:13px; text-align:center; color:var(--text-mid); padding-bottom:4px; }
+  tbody td:nth-child(6)::before { content:"수량 "; color:var(--text3); font-size:11px; font-family:'Noto Sans KR',sans-serif; }
+
+  /* 4줄: 실수익금 (강조) - 매도만 */
+  tbody td:nth-child(8) { grid-column:1/4; grid-row:5; display:block; font-size:17px; font-weight:700; text-align:center; padding:8px 0; border-top:1px solid var(--border); }
+  tbody td:nth-child(8)::before { content:"실수익금 "; color:var(--text3); font-size:11px; font-weight:500; font-family:'Noto Sans KR',sans-serif; }
+
+  /* 5줄: 수익률 + 수수료+세금 - 매도만 */
+  tbody td:nth-child(7) { grid-column:1/3; grid-row:6; display:block; font-size:13px; font-weight:600; text-align:center; }
+  tbody td:nth-child(7)::before { content:"수익률 "; color:var(--text3); font-size:11px; font-weight:500; font-family:'Noto Sans KR',sans-serif; }
+  tbody td:nth-child(9) { grid-column:3/4; grid-row:6; display:block; font-size:13px; text-align:center; }
+  tbody td:nth-child(9)::before { content:"수수료 "; color:var(--text3); font-size:11px; font-family:'Noto Sans KR',sans-serif; }
+
   tr.buy-row td:nth-child(7),
   tr.buy-row td:nth-child(8),
-  tr.buy-row td:nth-child(9) { display: none; }
-  tbody td:nth-child(10) { grid-row:5; grid-column:1/4; display:flex; gap:8px; justify-content:flex-end; padding-top:8px; border-top:1px solid var(--border); margin-top:4px; }
+  tr.buy-row td:nth-child(9) { display:none; }
+
+  /* 버튼 */
+  tbody td:nth-child(10) { grid-column:1/4; grid-row:7; display:flex; gap:8px; padding-top:10px; border-top:1px solid var(--border); margin-top:4px; }
   tbody td:nth-child(10) .btn { flex:1; justify-content:center; }
+  tr.buy-row td:nth-child(10) { grid-row:5; }
   .modal { border-radius: 12px 12px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-width: 100%; margin: 0; }
   .modal-overlay { align-items: flex-end; padding: 0; }
   .modal-body { padding: 16px; max-height: 70vh; }
@@ -392,52 +411,62 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
         </div>
       </div>
       <div class="form-section">
-        <h3>목표가 / 손절가</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>목표가</label><input type="text" id="b-target" placeholder="없으면 비워두세요"></div>
-          <div class="form-group"><label>손절가</label><input type="text" id="b-stop" placeholder="없으면 비워두세요"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <h3>외국인 동향</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>순매수 추세</label><textarea spellcheck="false" id="b-f-trend"></textarea></div>
-          <div class="form-group"><label>누적 순매수량</label><textarea spellcheck="false" id="b-f-total" placeholder="예: 91만주"></textarea></div>
-          <div class="form-group full"><label>매수 시작 시점 및 가격</label><textarea spellcheck="false" id="b-f-start" placeholder="예: 2월11일 / 48,000원"></textarea></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <h3>기관 동향</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>순매수 추세</label><textarea spellcheck="false" id="b-i-trend"></textarea></div>
-          <div class="form-group"><label>누적 순매수량</label><textarea spellcheck="false" id="b-i-total" placeholder="예: 600만주"></textarea></div>
-          <div class="form-group full"><label>매수 시작 시점 및 가격</label><textarea spellcheck="false" id="b-i-start" placeholder="예: 1월22일 / 45,750원"></textarea></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <h3>기술적 분석</h3>
-        <div class="form-grid">
-          <div class="form-group full"><label>기술적 분석</label><textarea spellcheck="false" id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
-          <div class="form-group full">
-            <label>최고점 → 최저점 낙폭 자동계산</label>
-            <div class="drop-calc">
-              <input type="number" id="b-high" placeholder="최고점">
-              <span class="arrow">→</span>
-              <input type="number" id="b-low" placeholder="최저점">
-              <button class="btn btn-ghost btn-sm" onclick="calcDrop()">계산</button>
-              <input type="text" id="b-drop" placeholder="결과" readonly>
-            </div>
+        <h3 class="section-toggle" onclick="toggleSection(this)">목표가 / 손절가 <span class="toggle-icon">▼</span></h3>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group"><label>목표가</label><input type="text" id="b-target" placeholder="없으면 비워두세요"></div>
+            <div class="form-group"><label>손절가</label><input type="text" id="b-stop" placeholder="없으면 비워두세요"></div>
           </div>
-          <div class="form-group full"><label>상승 배율 (급등 종목만)</label><textarea spellcheck="false" id="b-rise" placeholder="예: 2달간 6배 상승"></textarea></div>
-          <div class="form-group full"><label>주가 흐름</label><textarea spellcheck="false" id="b-flow" placeholder="예: 최저점 반등 후 횡보"></textarea></div>
-          <div class="form-group full"><label>모멘텀 훼손 원인</label><textarea spellcheck="false" id="b-momentum"></textarea></div>
         </div>
       </div>
       <div class="form-section">
-        <h3>시장 상황 및 기타</h3>
-        <div class="form-grid">
-          <div class="form-group full"><label>시장 상황</label><textarea spellcheck="false" id="b-market"></textarea></div>
-          <div class="form-group full"><label>기타 매수 근거</label><textarea spellcheck="false" id="b-etc"></textarea></div>
+        <h3 class="section-toggle collapsed" onclick="toggleSection(this)">외국인 동향 <span class="toggle-icon">▶</span></h3>
+        <div class="section-body" style="display:none">
+          <div class="form-grid">
+            <div class="form-group"><label>순매수 추세</label><textarea spellcheck="false" id="b-f-trend"></textarea></div>
+            <div class="form-group"><label>누적 순매수량</label><textarea spellcheck="false" id="b-f-total" placeholder="예: 91만주"></textarea></div>
+            <div class="form-group full"><label>매수 시작 시점 및 가격</label><textarea spellcheck="false" id="b-f-start" placeholder="예: 2월11일 / 48,000원"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3 class="section-toggle collapsed" onclick="toggleSection(this)">기관 동향 <span class="toggle-icon">▶</span></h3>
+        <div class="section-body" style="display:none">
+          <div class="form-grid">
+            <div class="form-group"><label>순매수 추세</label><textarea spellcheck="false" id="b-i-trend"></textarea></div>
+            <div class="form-group"><label>누적 순매수량</label><textarea spellcheck="false" id="b-i-total" placeholder="예: 600만주"></textarea></div>
+            <div class="form-group full"><label>매수 시작 시점 및 가격</label><textarea spellcheck="false" id="b-i-start" placeholder="예: 1월22일 / 45,750원"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3 class="section-toggle collapsed" onclick="toggleSection(this)">기술적 분석 <span class="toggle-icon">▶</span></h3>
+        <div class="section-body" style="display:none">
+          <div class="form-grid">
+            <div class="form-group full"><label>기술적 분석</label><textarea spellcheck="false" id="b-tech" placeholder="지지선, 이동평균선 등"></textarea></div>
+            <div class="form-group full">
+              <label>최고점 → 최저점 낙폭 자동계산</label>
+              <div class="drop-calc">
+                <input type="number" id="b-high" placeholder="최고점">
+                <span class="arrow">→</span>
+                <input type="number" id="b-low" placeholder="최저점">
+                <button class="btn btn-ghost btn-sm" onclick="calcDrop()">계산</button>
+                <input type="text" id="b-drop" placeholder="결과" readonly>
+              </div>
+            </div>
+            <div class="form-group full"><label>상승 배율 (급등 종목만)</label><textarea spellcheck="false" id="b-rise" placeholder="예: 2달간 6배 상승"></textarea></div>
+            <div class="form-group full"><label>주가 흐름</label><textarea spellcheck="false" id="b-flow" placeholder="예: 최저점 반등 후 횡보"></textarea></div>
+            <div class="form-group full"><label>모멘텀 훼손 원인</label><textarea spellcheck="false" id="b-momentum"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3 class="section-toggle collapsed" onclick="toggleSection(this)">시장 상황 및 기타 <span class="toggle-icon">▶</span></h3>
+        <div class="section-body" style="display:none">
+          <div class="form-grid">
+            <div class="form-group full"><label>시장 상황</label><textarea spellcheck="false" id="b-market"></textarea></div>
+            <div class="form-group full"><label>기타 매수 근거</label><textarea spellcheck="false" id="b-etc"></textarea></div>
+          </div>
         </div>
       </div>
     </div>
@@ -549,6 +578,14 @@ function setColor(el, val) {
 }
 
 // ── 초기화 ──
+function toggleSection(h3) {
+  const body = h3.nextElementSibling;
+  const icon = h3.querySelector('.toggle-icon');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  icon.textContent = isOpen ? '▶' : '▼';
+}
+
 function init() {
   records = loadData();
   const now = new Date();
@@ -651,7 +688,7 @@ function renderTable() {
         <td style="text-align:center"><span class="badge badge-buy">매수</span></td>
         <td style="text-align:center" class="c-buy">${r.price.toLocaleString()}원</td>
         <td style="text-align:center" class="c-mid">${r.qty.toLocaleString()}주</td>
-        <td style="text-align:center" class="c-dim"></td>
+        <td style="text-align:right" class="c-dim"></td>
         <td style="text-align:right" class="c-dim"></td>
         <td style="text-align:right" class="c-dim"></td>
         <td><div style="display:flex;gap:6px">
@@ -757,6 +794,13 @@ function openBuyModal(idx = null) {
       document.querySelectorAll('#buy-modal textarea').forEach(t => {
         t.style.height = 'auto';
         t.style.height = t.scrollHeight + 'px';
+      });
+      // 수정 시 모든 섹션 펼치기
+      document.querySelectorAll('#buy-modal .section-body').forEach(b => {
+        b.style.display = 'block';
+      });
+      document.querySelectorAll('#buy-modal .toggle-icon').forEach(i => {
+        i.textContent = '▼';
       });
     }, 50);
   } else {
