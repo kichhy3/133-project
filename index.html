@@ -172,7 +172,31 @@ tbody td { padding: 14px; white-space: nowrap; font-family: 'JetBrains Mono', mo
 .calc-row.total span:first-child { color: var(--text); }
 hr.calc-divider { border: none; border-top: 1px solid var(--border); }
 
-/* ── 토스트 ── */
+/* ── 미리보기 패널 ── */
+.preview-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 150; }
+.preview-overlay.active { display: block; }
+.preview-panel {
+  display: none; position: fixed; top: 0; right: 0; bottom: 0;
+  width: 360px; background: var(--surface); border-left: 1px solid var(--border2);
+  z-index: 151; overflow-y: auto; animation: slideInRight .2s ease;
+}
+.preview-panel.active { display: block; }
+@keyframes slideInRight { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+.preview-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.preview-header h3 { font-size: 15px; font-weight: 700; }
+.preview-close { background: var(--surface2); border: none; color: var(--text2); cursor: pointer; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.preview-close:hover { background: var(--surface3); color: var(--text); }
+.preview-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.preview-section { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+.preview-section h4 { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; font-weight: 600; }
+.preview-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.preview-row:last-child { border-bottom: none; }
+.preview-row .pk { color: var(--text3); min-width: 90px; flex-shrink: 0; font-size: 12px; }
+.preview-row .pv { color: var(--text); text-align: right; font-family: 'JetBrains Mono', monospace; word-break: break-all; font-size: 12px; }
+.preview-row .pv.txt { font-family: 'Noto Sans KR', sans-serif; line-height: 1.6; }
+@media(max-width:600px) {
+  .preview-panel { width: 100%; top: auto; border-left: none; border-top: 1px solid var(--border2); border-radius: 12px 12px 0 0; max-height: 80vh; }
+}
 .toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 13px 24px; font-size: 13px; font-weight: 500; z-index: 300; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.4); animation: slideDown .2s ease; }
 @keyframes slideDown { from{transform:translateX(-50%) translateY(-16px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
 
@@ -187,8 +211,8 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   .p-sep { display: none; }
   .action-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
   .view-tabs { order: 3; width: 100%; justify-content: center; }
-  .view-tab { flex: 1; text-align: center; }
-  .io-btns { order: 99; width: 100%; }
+  .view-tab { flex: 1; text-align: center; padding: 8px; }
+  .io-btns { order: 99; width: 100%; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border); }
   .io-btns .btn { flex: 1; justify-content: center; }
   .table-wrap { padding: 0 16px 24px; }
   table, thead, tbody, th, td, tr { display: block; }
@@ -304,6 +328,16 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
     <small>매수 기록 버튼을 눌러 첫 번째 기록을 추가해보세요</small>
     <button class="btn btn-buy" onclick="openBuyModal()" style="margin:0 auto">📝 매수 기록 추가</button>
   </div>
+</div>
+
+<!-- 미리보기 패널 -->
+<div class="preview-overlay" id="preview-overlay" onclick="closePreview()"></div>
+<div class="preview-panel" id="preview-panel">
+  <div class="preview-header">
+    <h3 id="preview-title">상세 보기</h3>
+    <button class="preview-close" onclick="closePreview()">×</button>
+  </div>
+  <div class="preview-body" id="preview-body"></div>
 </div>
 
 <!-- 매수 모달 -->
@@ -593,6 +627,10 @@ function renderTable() {
         </div></td>`;
     }
     tbody.appendChild(tr);
+    tr.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      openPreview(idx);
+    });
   });
 }
 
@@ -876,6 +914,83 @@ function importData(e) {
     e.target.value = '';
   };
   reader.readAsText(file);
+}
+
+// ── 미리보기 ──
+function openPreview(idx) {
+  const r = records[idx];
+  document.getElementById('preview-title').textContent = r.name + (r.type === 'buy' ? ' · 매수' : ' · 매도');
+  const body = document.getElementById('preview-body');
+  body.innerHTML = '';
+
+  const sec = (title, rows) => {
+    if (!rows.some(([,v]) => v)) return '';
+    return `<div class="preview-section">
+      <h4>${title}</h4>
+      ${rows.filter(([,v]) => v).map(([k,v,txt]) =>
+        `<div class="preview-row"><span class="pk">${k}</span><span class="pv ${txt?'txt':''}">${v}</span></div>`
+      ).join('')}
+    </div>`;
+  };
+
+  if (r.type === 'buy') {
+    const g = r.buyReason || {};
+    body.innerHTML = `
+      ${sec('기본 정보', [
+        ['날짜', r.date],
+        ['매수가', r.price?.toLocaleString() + '원'],
+        ['수량', r.qty?.toLocaleString() + '주'],
+        ['예수금 대비(%)', r.ratio ? (r.ratio.includes('%') ? r.ratio : r.ratio + '%') : ''],
+        ['목표가', r.target],
+        ['손절가', r.stop],
+      ])}
+      ${sec('외국인 동향', [
+        ['순매수 추세', g.fTrend, true],
+        ['누적 순매수량', g.fTotal],
+        ['시작 시점', g.fStart, true],
+      ])}
+      ${sec('기관 동향', [
+        ['순매수 추세', g.iTrend, true],
+        ['누적 순매수량', g.iTotal],
+        ['시작 시점', g.iStart, true],
+      ])}
+      ${sec('기술적 분석', [
+        ['기술적 분석', g.tech, true],
+        ['낙폭', g.drop],
+        ['상승 배율', g.rise, true],
+        ['주가 흐름', g.flow, true],
+        ['모멘텀 훼손', g.momentum, true],
+      ])}
+      ${sec('시장 상황 및 기타', [
+        ['시장 상황', g.market, true],
+        ['기타 근거', g.etc, true],
+      ])}`;
+  } else {
+    body.innerHTML = `
+      ${sec('매도 정보', [
+        ['날짜', r.date],
+        ['매도가', r.sellPrice?.toLocaleString() + '원'],
+        ['수량', r.qty?.toLocaleString() + '주'],
+        ['수익률', r.profitRate + '%'],
+        ['수수료+세금', r.fees?.total?.toLocaleString() + '원'],
+        ['실수익금', r.realProfit?.toLocaleString() + '원'],
+      ])}
+      ${sec('매도 근거', [
+        ['외국인 동향', r.fTrend, true],
+        ['기관 동향', r.iTrend, true],
+        ['매도 근거', r.reason, true],
+        ['예상과 달랐던 점', r.diff, true],
+        ['반성 및 배움', r.lesson, true],
+      ])}`;
+  }
+
+  document.getElementById('preview-overlay').classList.add('active');
+  document.getElementById('preview-panel').classList.add('active');
+}
+
+function closePreview() {
+  document.getElementById('preview-overlay').classList.remove('active');
+  document.getElementById('preview-panel').classList.remove('active');
 }
 
 // ── 토스트 ──
