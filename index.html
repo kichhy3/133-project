@@ -30,20 +30,20 @@
   --radius-sm: 8px;
 }
 [data-theme="light"] {
-  --bg: #f1f0eb;
+  --bg: #fafaf9;
   --surface: #ffffff;
-  --surface2: #f1f0eb;
-  --surface3: #e4e2d9;
-  --border: #e8e6de;
-  --border2: #d8d5cc;
-  --text: #141412;
-  --text2: #4a4845;
-  --text3: #9a9690;
-  --text-mid: #2a2825;
-  --buy: #c41e1e;
-  --sell: #1d4ed8;
-  --fee: #a16207;
-  --cyan: #0e7490;
+  --surface2: #f4f4f3;
+  --surface3: #e7e7e5;
+  --border: #e7e7e5;
+  --border2: #d4d4d2;
+  --text: #18181b;
+  --text2: #52525b;
+  --text3: #a1a1aa;
+  --text-mid: #27272a;
+  --buy: #dc2626;
+  --sell: #2563eb;
+  --fee: #d97706;
+  --cyan: #0891b2;
 }
 
 /* ── 커스텀 스크롤바 ── */
@@ -325,16 +325,34 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
 [data-theme="light"] .period-card,
 [data-theme="light"] .tool-card,
 [data-theme="light"] .split-section,
-[data-theme="light"] .combined-box { box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05); border-color: transparent; }
-[data-theme="light"] .header { box-shadow: 0 1px 0 var(--border), 0 2px 8px rgba(0,0,0,.06); }
+[data-theme="light"] .combined-box { box-shadow: 0 0 0 1px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04); border-color: transparent; background: var(--surface); }
+[data-theme="light"] .header { box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 2px 4px rgba(0,0,0,.03); border-bottom: none; }
 [data-theme="light"] .main-tab-nav { box-shadow: 0 1px 0 var(--border); }
-[data-theme="light"] .modal { box-shadow: 0 8px 32px rgba(0,0,0,.14); }
-[data-theme="light"] .form-section { background: #faf9f6; border-color: var(--border); }
-[data-theme="light"] .dashboard { box-shadow: 0 1px 0 var(--border); }
-[data-theme="light"] tbody tr:hover { background: #f5f4ef; }
-[data-theme="light"] .badge-buy { background: rgba(196,30,30,.1); border-color: rgba(196,30,30,.2); }
-[data-theme="light"] .badge-sell { background: rgba(29,78,216,.1); border-color: rgba(29,78,216,.2); }
-[data-theme="light"] .num-chip { background: var(--surface3); color: var(--text2); }
+[data-theme="light"] .modal { box-shadow: 0 10px 40px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04); border-color: transparent; }
+[data-theme="light"] .preview-panel.active { box-shadow: 0 10px 40px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04); border-color: transparent; }
+[data-theme="light"] .form-section { background: var(--surface2); border-color: transparent; }
+[data-theme="light"] .dashboard { box-shadow: 0 1px 0 var(--border); border-bottom: none; }
+[data-theme="light"] tbody tr:hover { background: var(--surface2); }
+[data-theme="light"] .badge-buy { background: rgba(220,38,38,.08); border-color: rgba(220,38,38,.18); color: #b91c1c; }
+[data-theme="light"] .badge-sell { background: rgba(37,99,235,.08); border-color: rgba(37,99,235,.18); color: #1d4ed8; }
+[data-theme="light"] .badge-hold { background: rgba(8,145,178,.08); border-color: rgba(8,145,178,.2); color: #0e7490; }
+[data-theme="light"] .num-chip { background: var(--surface2); color: var(--text2); }
+[data-theme="light"] .toast { box-shadow: 0 8px 24px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04); background: var(--surface); }
+[data-theme="light"] .btn-buy, [data-theme="light"] .btn-sell { color: #fff; }
+[data-theme="light"] .btn-edit:hover { background: var(--surface2); border-color: var(--border2); }
+[data-theme="light"] .preview-section { background: var(--surface2); border-color: transparent; }
+[data-theme="light"] .calc-box { background: var(--surface2); border-color: transparent; }
+[data-theme="light"] .form-group input, [data-theme="light"] .form-group textarea,
+[data-theme="light"] .form-group select { background: var(--surface); border-color: var(--border2); }
+[data-theme="light"] .form-group input[readonly] { background: var(--surface3); }
+[data-theme="light"] .split-row input { background: var(--surface); border-color: var(--border2); }
+[data-theme="light"] .split-result { background: var(--surface2); }
+[data-theme="light"] .search-wrap input { background: var(--surface); border-color: var(--border2); }
+[data-theme="light"] .period-select { background: var(--surface); border-color: var(--border2); }
+[data-theme="light"] .view-tab.active { background: var(--text); color: var(--surface); }
+[data-theme="light"] .fb-type-btn { background: var(--surface); border-color: var(--border2); }
+[data-theme="light"] .fb-type-btn.active { background: rgba(37,99,235,.08); border-color: rgba(37,99,235,.3); color: #1d4ed8; }
+[data-theme="light"] .theme-toggle { background: var(--surface); border-color: var(--border2); }
 @media(max-width:600px) {
   .header { padding: 0 16px; }
   .header-logo span { font-size: 14px; }
