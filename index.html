@@ -1504,7 +1504,7 @@ async function submitFeedback() {
     const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ 유형: typeLabel, 제목: title, 내용: body, 연락처: contact || '미입력' })
+      body: JSON.stringify({ '1_유형': typeLabel, '2_제목': title, '3_내용': body, '4_연락처': contact || '미입력' })
     });
     if (res.ok) {
       document.getElementById('feedback-form-wrap').style.display = 'none';
