@@ -25,8 +25,29 @@
   --radius: 12px;
   --radius-sm: 8px;
 }
+[data-theme="light"] {
+  --bg: #f0efe9;
+  --surface: #f7f6f2;
+  --surface2: #eceae3;
+  --surface3: #dedad1;
+  --border: #e4e2da;
+  --border2: #d4d1c8;
+  --text: #1c1917;
+  --text2: #57534e;
+  --text3: #a8a29e;
+  --text-mid: #292524;
+  --buy: #dc2626;
+  --sell: #2563eb;
+  --fee: #b45309;
+  --cyan: #0e7490;
+}
 
-/* ── 기본 ── */
+/* ── 커스텀 스크롤바 ── */
+* { scrollbar-width: thin; scrollbar-color: var(--surface3) transparent; }
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--border2); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; }
 input[type="number"]::-webkit-inner-spin-button,
@@ -41,7 +62,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .header-logo span { font-size: 18px; font-weight: 700; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-/* ── 메인 탭 ── */
+/* ── 테마 토글 ── */
+.theme-toggle { background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; color: var(--text2); cursor: pointer; padding: 4px 12px; font-size: 13px; margin-left: 12px; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+.theme-toggle:hover { background: var(--surface3); color: var(--text); }
 .main-tab-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 0; position: sticky; top: 60px; z-index: 99; }
 .main-tab-btn { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text3); padding: 12px 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .15s; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; }
 .main-tab-btn:hover { color: var(--text2); }
@@ -355,6 +378,7 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   <div class="header-logo">
     <div class="dot"></div>
     <span>수동 매매 기록 시스템</span>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ 라이트</button>
   </div>
 </div>
 
@@ -826,6 +850,22 @@ function setColor(el, val) {
   if (val > 0) el.classList.add('positive');
   else if (val < 0) el.classList.add('negative');
 }
+
+// ── 테마 토글 ──
+function toggleTheme() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const next = isLight ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('theme-btn').textContent = next === 'light' ? '🌙 다크' : '☀️ 라이트';
+}
+function applyTheme() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = saved === 'light' ? '🌙 다크' : '☀️ 라이트';
+}
+applyTheme();
 
 // ── 메인 탭 ──
 function setMainTab(tab) {
