@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>수동 매매 기록 시스템</title>
+<script>
+  // 테마 즉시 적용 (깜빡임 방지)
+  (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark'); })();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ── 변수 ── */
@@ -26,19 +30,19 @@
   --radius-sm: 8px;
 }
 [data-theme="light"] {
-  --bg: #f0efe9;
-  --surface: #f7f6f2;
-  --surface2: #eceae3;
-  --surface3: #dedad1;
-  --border: #e4e2da;
-  --border2: #d4d1c8;
-  --text: #1c1917;
-  --text2: #57534e;
-  --text3: #a8a29e;
-  --text-mid: #292524;
-  --buy: #dc2626;
-  --sell: #2563eb;
-  --fee: #b45309;
+  --bg: #f1f0eb;
+  --surface: #ffffff;
+  --surface2: #f1f0eb;
+  --surface3: #e4e2d9;
+  --border: #e8e6de;
+  --border2: #d8d5cc;
+  --text: #141412;
+  --text2: #4a4845;
+  --text3: #9a9690;
+  --text-mid: #2a2825;
+  --buy: #c41e1e;
+  --sell: #1d4ed8;
+  --fee: #a16207;
   --cyan: #0e7490;
 }
 
@@ -50,10 +54,13 @@
 *::-webkit-scrollbar-thumb:hover { background: var(--border2); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; }
+html { transition: background-color .25s, color .25s; }
+*, *::before, *::after { transition: background-color .25s, border-color .25s, color .2s; }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 input[type="number"] { -moz-appearance: textfield; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); }
 
 /* ── 헤더 ── */
 .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
@@ -97,19 +104,21 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 
 /* ── 버튼 ── */
 .btn { padding: 9px 18px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
-.btn-buy  { background: var(--buy); color: #000; font-size: 14px; padding: 8px 22px; min-width: 200px; justify-content: space-between; }
-.btn-buy:hover  { background: #fca5a5; }
-.btn-sell { background: var(--sell); color: #000; font-size: 14px; padding: 8px 22px; min-width: 200px; justify-content: space-between; }
-.btn-sell:hover { background: #93c5fd; }
+.btn-buy  { background: var(--buy); color: #fff; font-size: 14px; padding: 8px 22px; min-width: 200px; justify-content: space-between; }
+.btn-buy:hover  { filter: brightness(1.12); }
+.btn-sell { background: var(--sell); color: #fff; font-size: 14px; padding: 8px 22px; min-width: 200px; justify-content: space-between; }
+.btn-sell:hover { filter: brightness(1.12); }
 .btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
 .btn-ghost:hover { background: var(--surface3); color: var(--text); }
 .btn-save { background: #22c55e; color: #000; }
-.btn-save:hover { background: #4ade80; }
+.btn-save:hover { filter: brightness(1.1); }
 .btn-edit { background: transparent; color: var(--text3); border: 1px solid var(--border2); }
 .btn-edit:hover { background: var(--surface2); color: var(--text); }
 .btn-del  { background: transparent; color: var(--text3); border: 1px solid var(--border2); }
 .btn-del:hover  { background: rgba(248,113,113,.1); color: var(--buy); border-color: rgba(248,113,113,.3); }
 .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
+/* 포커스 접근성 */
+:focus-visible { outline: 2px solid var(--sell); outline-offset: 2px; border-radius: 4px; }
 
 /* ── 액션바 ── */
 .action-bar { padding: 14px 32px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
@@ -159,7 +168,8 @@ tbody td { padding: 14px; white-space: nowrap; font-family: 'JetBrains Mono', mo
 .empty-state small { font-size: 13px; color: var(--text3); display: block; margin-bottom: 20px; }
 
 /* ── 모달 ── */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 200; justify-content: center; align-items: flex-start; padding: 10px 20px 40px; overflow-y: auto; backdrop-filter: blur(4px); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; justify-content: center; align-items: flex-start; padding: 10px 20px 40px; overflow-y: auto; backdrop-filter: blur(4px); }
+[data-theme="light"] .modal-overlay { background: rgba(0,0,0,.35); }
 .modal-overlay.active { display: flex; }
 .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; width: 100%; max-width: 620px; margin: auto; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
 .modal-header { padding: 22px 28px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -209,7 +219,8 @@ tbody td { padding: 14px; white-space: nowrap; font-family: 'JetBrains Mono', mo
 hr.calc-divider { border: none; border-top: 1px solid var(--border); }
 
 /* ── 미리보기 패널 ── */
-.preview-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 150; backdrop-filter: blur(4px); justify-content: center; align-items: flex-start; padding: 10px 20px 40px; overflow-y: auto; }
+.preview-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 150; backdrop-filter: blur(4px); justify-content: center; align-items: flex-start; padding: 10px 20px 40px; overflow-y: auto; }
+[data-theme="light"] .preview-overlay { background: rgba(0,0,0,.35); }
 .preview-overlay.active { display: flex; }
 .preview-panel { display: none; }
 .preview-panel.active {
@@ -309,7 +320,21 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
 .fb-type-btn:hover { background: var(--surface3); color: var(--text); }
 .fb-type-btn.active { background: rgba(96,165,250,.15); border-color: rgba(96,165,250,.4); color: var(--sell); }
 
-/* ── 반응형 ── */
+/* ── 라이트 모드 깊이감 ── */
+[data-theme="light"] .stat-card,
+[data-theme="light"] .period-card,
+[data-theme="light"] .tool-card,
+[data-theme="light"] .split-section,
+[data-theme="light"] .combined-box { box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05); border-color: transparent; }
+[data-theme="light"] .header { box-shadow: 0 1px 0 var(--border), 0 2px 8px rgba(0,0,0,.06); }
+[data-theme="light"] .main-tab-nav { box-shadow: 0 1px 0 var(--border); }
+[data-theme="light"] .modal { box-shadow: 0 8px 32px rgba(0,0,0,.14); }
+[data-theme="light"] .form-section { background: #faf9f6; border-color: var(--border); }
+[data-theme="light"] .dashboard { box-shadow: 0 1px 0 var(--border); }
+[data-theme="light"] tbody tr:hover { background: #f5f4ef; }
+[data-theme="light"] .badge-buy { background: rgba(196,30,30,.1); border-color: rgba(196,30,30,.2); }
+[data-theme="light"] .badge-sell { background: rgba(29,78,216,.1); border-color: rgba(29,78,216,.2); }
+[data-theme="light"] .num-chip { background: var(--surface3); color: var(--text2); }
 @media(max-width:600px) {
   .header { padding: 0 16px; }
   .header-logo span { font-size: 14px; }
@@ -360,9 +385,13 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   .modal-body { padding: 16px; max-height: 70vh; }
   .modal-header, .modal-footer { padding: 14px 16px; }
   .form-grid { grid-template-columns: 1fr; }
-  .preview-overlay { padding: 70px 0 0; align-items: flex-start; }
-  .preview-panel.active { border-radius: 0 0 12px 12px; max-width: 100%; margin: 0; }
-  .preview-body { padding: 16px; }
+  .preview-overlay { padding: 0; align-items: flex-start; }
+  .preview-panel.active {
+    position: fixed; top: 0; left: 0; right: 0;
+    border-radius: 0 0 14px 14px; max-width: 100%; margin: 0;
+    max-height: 85vh; display: flex; flex-direction: column;
+  }
+  .preview-body { padding: 16px; flex: 1; overflow-y: auto; max-height: none; }
   .preview-header { padding: 14px 16px; border-radius: 0; }
   .tools-wrap { padding: 16px; }
   .split-grid { grid-template-columns: 1fr; }
@@ -890,7 +919,9 @@ function init() {
   records = loadData();
   const now = new Date();
   const sy = document.getElementById('sel-year');
-  for (let y = 2026; y <= 2030; y++) {
+  const startYear = 2026;
+  const endYear = Math.max(now.getFullYear() + 2, 2030);
+  for (let y = startYear; y <= endYear; y++) {
     const o = document.createElement('option');
     o.value = y; o.textContent = `${y}년`;
     if (y === now.getFullYear()) o.selected = true;
@@ -1149,12 +1180,24 @@ function openSellModal(idx = null) {
       const sold = records.filter(s => s.type === 'sell' && s.name === r.name && s.buyDate === r.rawDate)
                           .reduce((a, s) => a + s.qty, 0);
       if (sold < r.qty) {
+        const remaining = r.qty - sold;
         const o = document.createElement('option');
         o.value = i;
-        o.textContent = `${r.name} | ${r.price.toLocaleString()}원 | ${r.qty}주`;
+        o.textContent = `${r.name} | ${r.price.toLocaleString()}원 | 잔여 ${remaining.toLocaleString()}주`;
         combo.appendChild(o);
       }
     });
+    if (combo.options.length === 0) {
+      const o = document.createElement('option');
+      o.value = ''; o.textContent = '보유 중인 종목이 없어요';
+      o.disabled = true; o.selected = true;
+      combo.appendChild(o);
+      document.querySelector('#sell-modal .btn-save').disabled = true;
+      document.querySelector('#sell-modal .btn-save').style.opacity = '0.4';
+    } else {
+      document.querySelector('#sell-modal .btn-save').disabled = false;
+      document.querySelector('#sell-modal .btn-save').style.opacity = '';
+    }
     clearForm('sell');
   }
   updateSellCalc();
@@ -1173,11 +1216,18 @@ function limitRatio() {
   if (v > 100) { input.value = 100; showToast('⚠️ 예수금 대비는 최대 100%예요!'); }
   if (v < 0)   { input.value = 0; }
 }
+function getRemainingQty(buy) {
+  const buyIdx = records.indexOf(buy);
+  if (buyIdx === -1) return 0;
+  const sold = records.filter(s => s.type === 'sell' && s.name === buy.name && s.buyDate === buy.rawDate)
+                      .reduce((a, s) => a + s.qty, 0);
+  return buy.qty - sold;
+}
 function limitSellQty() {
   const buy = records[parseInt(document.getElementById('s-position').value)];
   if (!buy) return;
   const qtyInput = document.getElementById('s-qty');
-  const max = buy.qty;
+  const max = getRemainingQty(buy);
   if (parseFloat(qtyInput.value) > max) { qtyInput.value = max; showToast(`⚠️ 최대 매도 가능 수량은 ${max.toLocaleString()}주예요!`); }
   if (parseFloat(qtyInput.value) < 1) qtyInput.value = 1;
 }
@@ -1204,7 +1254,8 @@ function saveSell() {
   const sp      = parseFloat(document.getElementById('s-price').value);
   const qty     = parseFloat(document.getElementById('s-qty').value);
   if (!rawDate || !sp || !qty || !buy) { showToast('❌ 필수 항목을 입력해주세요!'); return; }
-  if (qty > buy.qty) { showToast(`⚠️ 최대 매도 가능 수량은 ${buy.qty.toLocaleString()}주예요!`); return; }
+  const remaining = editIdx !== null ? getRemainingQty(buy) + records[editIdx].qty : getRemainingQty(buy);
+  if (qty > remaining) { showToast(`⚠️ 최대 매도 가능 수량은 ${remaining.toLocaleString()}주예요!`); return; }
   const fees   = calcFees(buy.price, qty, sp);
   const profit = (sp - buy.price) * qty;
   const real   = profit - fees.total;
@@ -1320,11 +1371,11 @@ function closePreview() {
 }
 
 // ── 토스트 ──
-function showToast(msg) {
+function showToast(msg, duration = 4500) {
   const t = document.createElement('div');
   t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  setTimeout(() => t.remove(), duration);
 }
 
 // ── textarea 자동 높이 ──
@@ -1557,16 +1608,6 @@ async function submitFeedback() {
   } finally {
     btn.textContent = '📨 제출하기'; btn.disabled = false;
   }
-}
-
-function resetFeedback() {
-  document.getElementById('fb-title').value   = '';
-  document.getElementById('fb-body').value    = '';
-  document.getElementById('fb-contact').value = '';
-  document.getElementById('fb-type').value    = 'bug';
-  document.querySelectorAll('.fb-type-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-  document.getElementById('feedback-form-wrap').style.display = '';
-  document.getElementById('feedback-success').style.display   = 'none';
 }
 
 init();
