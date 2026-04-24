@@ -971,12 +971,11 @@ function init() {
   records = loadData();
   const now = new Date();
   const sy = document.getElementById('sel-year');
-  const startYear = 2026;
-  const endYear = Math.max(now.getFullYear() + 2, 2030);
-  for (let y = startYear; y <= endYear; y++) {
+  const currentYear = now.getFullYear();
+  for (let y = Math.max(2026, currentYear - 2); y <= currentYear + 2; y++) {
     const o = document.createElement('option');
     o.value = y; o.textContent = `${y}년`;
-    if (y === now.getFullYear()) o.selected = true;
+    if (y === currentYear) o.selected = true;
     sy.appendChild(o);
   }
   const sm = document.getElementById('sel-month');
