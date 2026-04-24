@@ -20,9 +20,6 @@
   --glass3: rgba(255,255,255,.14);
   --border: rgba(255,255,255,.1);
   --border2: rgba(255,255,255,.16);
-  --surface: rgba(255,255,255,.05);
-  --surface2: rgba(255,255,255,.07);
-  --surface3: rgba(255,255,255,.14);
   --text: #f4f4ff;
   --text2: #b0b0cc;
   --text3: #7070a0;
@@ -47,9 +44,6 @@
   --glass3: rgba(255,255,255,.85);
   --border: rgba(100,120,200,.15);
   --border2: rgba(100,120,200,.25);
-  --surface: rgba(255,255,255,.55);
-  --surface2: rgba(255,255,255,.4);
-  --surface3: rgba(200,210,240,.4);
   --text: #1a1a2e;
   --text2: #4a4a6a;
   --text3: #9090aa;
@@ -63,10 +57,10 @@
 }
 
 /* ── 커스텀 스크롤바 ── */
-* { scrollbar-width: thin; scrollbar-color: var(--surface3) transparent; }
+* { scrollbar-width: thin; scrollbar-color: var(--glass3) transparent; }
 *::-webkit-scrollbar { width: 4px; height: 4px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+*::-webkit-scrollbar-thumb { background: var(--glass3); border-radius: 4px; }
 *::-webkit-scrollbar-thumb:hover { background: var(--border2); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-mid) 50%, var(--bg-to) 100%); background-attachment: fixed; color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; }
@@ -100,7 +94,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .stat-card { background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); }
 .stat-card .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .8px; font-weight: 600; margin-bottom: 6px; }
-.stat-card .value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+.stat-card .value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
 .period-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .period-card { background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; overflow-x: auto; scrollbar-width: none; box-shadow: var(--shadow); }
 .period-card::-webkit-scrollbar { display: none; }
@@ -108,18 +102,18 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .period-select:focus { outline: none; border-color: var(--sell); }
 .period-stat { display: flex; flex-direction: column; gap: 2px; }
 .period-stat .p-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
-.period-stat .p-value { font-size: 14px; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text); }
+.period-stat .p-value { font-size: 14px; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 .p-sep { color: var(--border2); font-size: 18px; }
 
 /* ── 색상 유틸 ── */
-.c-buy { color: var(--buy); }
-.c-sell { color: var(--sell); }
-.c-fee { color: var(--fee); }
+.c-buy { color: var(--buy) !important; }
+.c-sell { color: var(--sell) !important; }
+.c-fee { color: var(--fee) !important; }
 .c-muted { color: var(--text2); }
 .c-dim { color: var(--text3); }
 .c-mid { color: var(--text-mid); }
-.positive { color: var(--buy); }
-.negative { color: var(--sell); }
+.positive { color: var(--buy) !important; }
+.negative { color: var(--sell) !important; }
 
 /* ── 버튼 ── */
 .btn { padding: 9px 18px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
@@ -146,7 +140,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .view-tab:last-child { border-right: none; }
 .view-tab:hover { color: var(--text2); background: var(--glass2); }
 .view-tab.active { background: var(--glass3); color: var(--text); }
-.mobile-date { display: none; font-size: 12px; color: var(--text2); margin-left: 6px; }
+.mobile-date { display: none; font-size: 12px; color: var(--text2); margin-left: 6px; white-space: nowrap; }
 @media(max-width:600px) { .mobile-date { display: inline; } }
 .search-wrap { flex: 1; max-width: 200px; min-width: 100px; }
 .search-wrap input { background: var(--glass); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text); padding: 7px 12px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; width: 100%; outline: none; transition: border .15s; }
@@ -175,7 +169,7 @@ tr.buy-row  { background: rgba(248,113,113,.05); }
 tr.sell-row { background: rgba(96,165,250,.05); }
 tr.buy-row:hover  { background: rgba(248,113,113,.1); }
 tr.sell-row:hover { background: rgba(96,165,250,.1); }
-tbody td { padding: 14px; white-space: nowrap; font-family: 'JetBrains Mono', monospace; text-align: center; overflow: hidden; text-overflow: ellipsis; color: var(--text-mid); }
+tbody td { padding: 14px; white-space: nowrap; font-family: 'JetBrains Mono', monospace; text-align: center; overflow: hidden; text-overflow: ellipsis; }
 tbody td:nth-child(1),
 tbody td:nth-child(4) { overflow: visible; text-overflow: clip; }
 .td-text { font-family: 'Noto Sans KR', sans-serif; }
@@ -339,11 +333,11 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
 
 /* 피드백 유형 버튼 */
 .fb-type-btn {
-  background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px;
+  background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: 20px;
   color: var(--text2); padding: 7px 16px; font-size: 12px; font-weight: 600;
   cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .15s;
 }
-.fb-type-btn:hover { background: var(--surface3); color: var(--text); }
+.fb-type-btn:hover { background: var(--glass3); color: var(--text); }
 .fb-type-btn.active { background: rgba(96,165,250,.15); border-color: rgba(96,165,250,.4); color: var(--sell); }
 
 /* ── 라이트 모드 오버라이드 ── */
@@ -898,8 +892,7 @@ function fmt(n) {
 }
 function formatDate(str) {
   const days = ['일','월','화','수','목','금','토'];
-  const d = new Date(str);
-  return { date: str, day: days[d.getDay()] + '요일' };
+  return str + '(' + days[new Date(str).getDay()] + ')';
 }
 function calcFees(buyPrice, qty, sellPrice) {
   const b = buyPrice * qty, s = sellPrice * qty;
@@ -1073,8 +1066,7 @@ function renderTable() {
         </div></td>`;
     } else {
       const real = r.realProfit || 0, fee = r.fees?.total || 0, pos = real >= 0;
-      const sdays = ['일','월','화','수','목','금','토'];
-      const sday = sdays[new Date(r.rawDate).getDay()] + '요일';
+      const sday = ['일','월','화','수','목','금','토'][new Date(r.rawDate).getDay()] + '요일';
       tr.className = 'sell-row';
       tr.innerHTML = `
         <td><span class="mobile-date">${r.rawDate} <span style="color:var(--text3);font-size:10px">${sday}</span></span></td>
@@ -1178,9 +1170,8 @@ function saveBuy() {
   const qty     = parseFloat(document.getElementById('b-qty').value);
   if (!rawDate || !name || !price || !qty) { showToast('❌ 날짜, 종목명, 매수가, 수량은 필수예요!'); return; }
   const ratioVal = document.getElementById('b-ratio').value;
-  const fd = formatDate(rawDate);
   const record = {
-    type: 'buy', rawDate, date: fd.date, day: fd.day, name, price, qty,
+    type: 'buy', rawDate, date: formatDate(rawDate), name, price, qty,
     ratio:  ratioVal ? ratioVal + '%' : '',
     target: document.getElementById('b-target').value,
     stop:   document.getElementById('b-stop').value,
@@ -1314,9 +1305,8 @@ function saveSell() {
   const profit = (sp - buy.price) * qty;
   const real   = profit - fees.total;
   const rate   = ((sp - buy.price) / buy.price * 100).toFixed(2);
-  const fds = formatDate(rawDate);
   const record = {
-    type: 'sell', rawDate, date: fds.date, day: fds.day,
+    type: 'sell', rawDate, date: formatDate(rawDate),
     name: buy.name, buyDate: buy.rawDate,
     sellPrice: sp, qty, profit, realProfit: real, profitRate: rate, fees,
     fTrend: document.getElementById('s-f-trend').value, iTrend: document.getElementById('s-i-trend').value,
