@@ -1063,10 +1063,11 @@ function renderTable() {
       tr.className = 'buy-row';
       const hold = holdings.has(r.name + r.rawDate)
         ? `<span class="badge badge-hold">보유중</span>` : '';
-      const day = r.day || '';
+      const days = ['일','월','화','수','목','금','토'];
+      const day = days[new Date(r.rawDate).getDay()] + '요일';
       tr.innerHTML = `
-        <td><span class="num-chip">${num}</span><span class="mobile-date">${r.date}</span></td>
-        <td class="td-text"><span style="color:var(--text-mid);font-size:13px">${r.date}</span><br><span style="color:var(--text3);font-size:11px">${day}</span></td>
+        <td><span class="num-chip">${num}</span><span class="mobile-date">${r.rawDate}</span></td>
+        <td class="td-text"><span style="color:var(--text-mid);font-size:13px">${r.rawDate}</span> <span style="color:var(--text3);font-size:11px">${day}</span></td>
         <td class="td-text" style="font-weight:600">${r.name}${hold}</td>
         <td><span class="badge badge-buy">매수</span></td>
         <td class="c-mid">${r.price.toLocaleString()}원</td>
@@ -1079,11 +1080,12 @@ function renderTable() {
         </div></td>`;
     } else {
       const real = r.realProfit || 0, fee = r.fees?.total || 0, pos = real >= 0;
-      const sday = r.day || '';
+      const sdays = ['일','월','화','수','목','금','토'];
+      const sday = sdays[new Date(r.rawDate).getDay()] + '요일';
       tr.className = 'sell-row';
       tr.innerHTML = `
-        <td><span class="mobile-date">${r.date}</span></td>
-        <td class="td-text"><span style="color:var(--text-mid);font-size:13px">${r.date}</span><br><span style="color:var(--text3);font-size:11px">${sday}</span></td>
+        <td><span class="mobile-date">${r.rawDate}</span></td>
+        <td class="td-text"><span style="color:var(--text-mid);font-size:13px">${r.rawDate}</span> <span style="color:var(--text3);font-size:11px">${sday}</span></td>
         <td class="td-text" style="font-weight:600">${r.name}</td>
         <td><span class="badge badge-sell">매도</span></td>
         <td class="c-mid">${r.sellPrice.toLocaleString()}원</td>
