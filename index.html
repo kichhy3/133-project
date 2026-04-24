@@ -18,8 +18,8 @@
   --glass: rgba(255,255,255,.05);
   --glass2: rgba(255,255,255,.08);
   --glass3: rgba(255,255,255,.14);
-  --border: rgba(255,255,255,.1);
-  --border2: rgba(255,255,255,.16);
+  --border: rgba(255,255,255,.15);
+  --border2: rgba(255,255,255,.22);
   --text: #f4f4ff;
   --text2: #b0b0cc;
   --text3: #7070a0;
@@ -42,8 +42,8 @@
   --glass: rgba(255,255,255,.55);
   --glass2: rgba(255,255,255,.7);
   --glass3: rgba(255,255,255,.85);
-  --border: rgba(100,120,200,.15);
-  --border2: rgba(100,120,200,.25);
+  --border: rgba(100,120,200,.25);
+  --border2: rgba(100,120,200,.38);
   --text: #1a1a2e;
   --text2: #4a4a6a;
   --text3: #9090aa;
@@ -71,6 +71,15 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 input[type="number"] { -moz-appearance: textfield; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); }
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group textarea,
+[data-theme="light"] .form-group select { background: rgba(100,120,200,.06); border-color: var(--border2); }
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group textarea:focus,
+[data-theme="light"] .form-group select:focus { background: rgba(100,120,200,.1); }
+[data-theme="light"] .split-row input { background: rgba(100,120,200,.06); }
+[data-theme="light"] .split-row input:focus { background: rgba(100,120,200,.1); }
+[data-theme="light"] .search-wrap input { background: rgba(100,120,200,.06); }
 
 /* ── 헤더 ── */
 .header { background: var(--glass2); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
@@ -209,13 +218,13 @@ tbody td:nth-child(4) { overflow: visible; text-overflow: clip; }
 .form-group input,
 .form-group textarea,
 .form-group select {
-  background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.04); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: var(--radius-sm);
   color: var(--text); padding: 9px 12px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
   transition: border .15s, box-shadow .15s; width: 100%;
 }
 .form-group input:focus,
 .form-group textarea:focus,
-.form-group select:focus { outline: none; border-color: var(--sell); box-shadow: 0 0 0 3px rgba(96,165,250,.12); background: var(--glass3); }
+.form-group select:focus { outline: none; border-color: var(--sell); box-shadow: 0 0 0 3px rgba(96,165,250,.12); background: rgba(255,255,255,.07); }
 .form-group textarea { resize: vertical; min-height: 64px; line-height: 1.5; overflow-y: hidden; scrollbar-width: none; }
 .form-group textarea::-webkit-scrollbar { display: none; }
 .form-group input[readonly] { color: var(--text2); background: var(--glass); cursor: default; }
@@ -293,12 +302,12 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
 .split-rows { padding: 8px; display: flex; flex-direction: column; gap: 6px; min-height: 40px; }
 .split-row { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 6px; align-items: center; }
 .split-row input {
-  background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: 6px;
+  background: rgba(255,255,255,.04); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: 6px;
   color: var(--text); padding: 7px 10px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
   width: 100%; outline: none; transition: border .12s;
 }
-.split-row input:focus { border-color: var(--sell); background: var(--glass3); }
-.split-row input[readonly] { background: var(--glass); color: var(--text2); }
+.split-row input:focus { border-color: var(--sell); background: rgba(255,255,255,.07); }
+.split-row input[readonly] { background: rgba(255,255,255,.02); color: var(--text2); }
 .split-row-subtotal { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; min-width: 70px; text-align: right; white-space: nowrap; }
 .btn-del-row { background: transparent; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 4px; line-height: 1; transition: all .12s; }
 .btn-del-row:hover { background: rgba(248,113,113,.1); color: var(--buy); }
@@ -676,7 +685,7 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
         <div style="display:flex;flex-direction:column;gap:6px">
           <label style="font-size:12px;color:var(--text2);font-weight:600">제목 <span style="color:var(--buy)">*</span></label>
           <input type="text" id="fb-title" placeholder="한 줄로 간단히 설명해 주세요"
-            style="background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border .15s"
+            style="background:rgba(255,255,255,.04);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border .15s"
             onfocus="this.style.borderColor='var(--sell)'" onblur="this.style.borderColor='var(--border2)'">
         </div>
 
@@ -685,7 +694,7 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
           <label style="font-size:12px;color:var(--text2);font-weight:600">내용 <span style="color:var(--buy)">*</span></label>
           <textarea id="fb-body" placeholder="버그라면 — 어떤 상황에서 발생했는지 자세히 적어주세요&#10;개선 제안이라면 — 어떤 기능이 추가되면 좋을지 알려주세요"
             rows="5"
-            style="background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;resize:vertical;line-height:1.6;transition:border .15s"
+            style="background:rgba(255,255,255,.04);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;resize:vertical;line-height:1.6;transition:border .15s"
             onfocus="this.style.borderColor='var(--sell)'" onblur="this.style.borderColor='var(--border2)'"></textarea>
         </div>
 
@@ -695,7 +704,7 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
             연락처 <span style="color:var(--text3);font-weight:400">(선택 · 답변받고 싶으시면 입력)</span>
           </label>
           <input type="text" id="fb-contact" placeholder="이메일 또는 연락 가능한 방법"
-            style="background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border .15s"
+            style="background:rgba(255,255,255,.04);backdrop-filter:blur(8px);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border .15s"
             onfocus="this.style.borderColor='var(--sell)'" onblur="this.style.borderColor='var(--border2)'">
         </div>
 
