@@ -56,7 +56,18 @@
   --shadow-lg: 0 20px 60px rgba(100,120,200,.18), 0 0 0 1px var(--border);
 }
 
-/* ── 커스텀 스크롤바 ── */
+/* ── 커스텀 셀렉트 ── */
+.custom-select { position: relative; flex-shrink: 0; }
+.cs-btn { background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); padding: 5px 12px; font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: all .15s; }
+.cs-btn:hover { background: var(--glass3); }
+.cs-arrow { font-size: 10px; color: var(--text3); transition: transform .2s; }
+.custom-select.open .cs-arrow { transform: rotate(180deg); }
+.cs-dropdown { display: none; position: fixed; background: var(--glass3); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--border2); border-radius: 10px; overflow-y: auto; z-index: 9999; box-shadow: var(--shadow-lg); max-height: 300px; min-width: 100px; }
+.custom-select.open .cs-dropdown { display: block; animation: fadeIn .15s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+.cs-option { padding: 8px 16px; font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; color: var(--text2); white-space: nowrap; transition: all .1s; }
+.cs-option:hover { background: var(--glass2); color: var(--text); }
+.cs-option.selected { color: var(--sell); background: rgba(96,165,250,.1); }
 * { scrollbar-width: thin; scrollbar-color: var(--glass3) transparent; }
 *::-webkit-scrollbar { width: 4px; height: 4px; }
 *::-webkit-scrollbar-track { background: transparent; }
@@ -105,9 +116,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); curso
 .stat-card .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .8px; font-weight: 600; margin-bottom: 6px; }
 .stat-card .value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
 .period-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.period-card { background: var(--glass2); backdrop-filter: var(--blur-sm); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; overflow-x: auto; scrollbar-width: none; box-shadow: var(--shadow); }
-.period-card::-webkit-scrollbar { display: none; }
-.period-select { background: var(--glass3); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); padding: 4px 10px; font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; min-width: 90px; }
+.period-card { background: var(--glass2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: var(--shadow); }
+.period-select { background: var(--glass3); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); padding: 4px 10px; font-size: 13px; font-weight: 600; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; min-width: 90px; }
+.period-select option { background: #1e1e2e; color: #f4f4ff; }
+[data-theme="light"] .period-select option { background: #f0f2ff; color: #1a1a2e; }
 .period-select:focus { outline: none; border-color: var(--sell); }
 .period-stat { display: flex; flex-direction: column; gap: 2px; }
 .period-stat .p-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
@@ -218,13 +230,15 @@ tbody td:nth-child(4) { overflow: visible; text-overflow: clip; }
 .form-group input,
 .form-group textarea,
 .form-group select {
-  background: rgba(255,255,255,.04); backdrop-filter: var(--blur-sm); border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.04); border: 1px solid var(--border2); border-radius: var(--radius-sm);
   color: var(--text); padding: 9px 12px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
   transition: border .15s, box-shadow .15s; width: 100%;
 }
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus { outline: none; border-color: var(--sell); box-shadow: 0 0 0 3px rgba(96,165,250,.12); background: rgba(255,255,255,.07); }
+.form-group select option { background: #1e1e2e; color: #f4f4ff; }
+[data-theme="light"] .form-group select option { background: #f0f2ff; color: #1a1a2e; }
 .form-group textarea { resize: vertical; min-height: 64px; line-height: 1.5; overflow-y: hidden; scrollbar-width: none; }
 .form-group textarea::-webkit-scrollbar { display: none; }
 .form-group input[readonly] { color: var(--text2); background: var(--glass); cursor: default; }
@@ -370,7 +384,7 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   .dashboard { padding: 12px 16px; }
   .stat-card .value { font-size: 16px; }
   .period-row { grid-template-columns: 1fr; gap: 8px; }
-  .period-card { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; }
+  .period-card { padding: 10px 12px; gap: 6px; flex-wrap: nowrap; overflow: visible; }
   .period-card .period-stat { min-width: 70px; flex-shrink: 0; }
   .p-sep { font-size: 12px; color: var(--border2); }
   .action-bar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
@@ -477,7 +491,12 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
   </div>
   <div class="period-row">
     <div class="period-card">
-      <select id="sel-year" class="period-select" onchange="updateStats()"></select>
+      <div class="custom-select" id="cs-year">
+        <button class="cs-btn" onclick="toggleCustomSelect('cs-year')">
+          <span id="cs-year-label">2026년</span><span class="cs-arrow">▾</span>
+        </button>
+        <div class="cs-dropdown" id="cs-year-drop"></div>
+      </div>
       <span class="p-sep">|</span>
       <div class="period-stat">
         <span class="p-label">실수익금</span>
@@ -495,7 +514,12 @@ hr.calc-divider { border: none; border-top: 1px solid var(--border); }
       </div>
     </div>
     <div class="period-card">
-      <select id="sel-month" class="period-select" onchange="updateStats()"></select>
+      <div class="custom-select" id="cs-month">
+        <button class="cs-btn" onclick="toggleCustomSelect('cs-month')">
+          <span id="cs-month-label">1월</span><span class="cs-arrow">▾</span>
+        </button>
+        <div class="cs-dropdown" id="cs-month-drop"></div>
+      </div>
       <span class="p-sep">|</span>
       <div class="period-stat">
         <span class="p-label">실수익금</span>
@@ -927,7 +951,71 @@ function setColor(el, val) {
   else if (val < 0) el.classList.add('negative');
 }
 
-// ── 테마 토글 ──
+// ── 커스텀 셀렉트 ──
+window._selYear  = new Date().getFullYear();
+window._selMonth = new Date().getMonth() + 1;
+
+function toggleCustomSelect(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  // 열려있는 모든 드롭다운 닫기
+  document.querySelectorAll('.custom-select.open').forEach(e => {
+    e.classList.remove('open');
+    const d = document.getElementById(e.id + '-drop');
+    if (d) d.style.display = 'none';
+  });
+  if (!isOpen) {
+    el.classList.add('open');
+    const btn = el.querySelector('.cs-btn');
+    const drop = document.getElementById(id + '-drop');
+    // body로 이동 (backdrop-filter 부모의 fixed 버그 회피)
+    if (drop.parentElement !== document.body) document.body.appendChild(drop);
+    const rect = btn.getBoundingClientRect();
+    drop.style.display = 'block';
+    drop.style.left = rect.left + 'px';
+    drop.style.minWidth = rect.width + 'px';
+    const dropH = Math.min(drop.scrollHeight, 300);
+    if (rect.bottom + dropH + 12 > window.innerHeight) {
+      drop.style.top = '';
+      drop.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+    } else {
+      drop.style.top = (rect.bottom + 6) + 'px';
+      drop.style.bottom = '';
+    }
+  }
+}
+function selectCustomOption(id, value, label) {
+  if (id === 'cs-year')  { window._selYear  = parseInt(value); document.getElementById('cs-year-label').textContent  = label; }
+  if (id === 'cs-month') { window._selMonth = parseInt(value); document.getElementById('cs-month-label').textContent = label; }
+  document.querySelectorAll(`#${id}-drop .cs-option`).forEach(el => {
+    el.classList.toggle('selected', parseInt(el.dataset.value) === parseInt(value));
+  });
+  document.getElementById(id).classList.remove('open');
+  const drop = document.getElementById(id + '-drop');
+  if (drop) drop.style.display = 'none';
+  updateStats();
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.custom-select') && !e.target.closest('.cs-dropdown')) {
+    document.querySelectorAll('.custom-select.open').forEach(el => {
+      el.classList.remove('open');
+      const d = document.getElementById(el.id + '-drop');
+      if (d) d.style.display = 'none';
+    });
+  }
+});
+const closeAllSelects = () => {
+  document.querySelectorAll('.custom-select.open').forEach(el => {
+    el.classList.remove('open');
+    const d = document.getElementById(el.id + '-drop');
+    if (d) d.style.display = 'none';
+  });
+};
+window.addEventListener('scroll', e => {
+  if (e.target.closest && e.target.closest('.cs-dropdown')) return;
+  closeAllSelects();
+}, true);
+window.addEventListener('resize', closeAllSelects);
 function toggleTheme() {
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   const next = isLight ? 'dark' : 'light';
@@ -965,21 +1053,29 @@ function toggleSection(h3) {
 function init() {
   records = loadData();
   const now = new Date();
-  const sy = document.getElementById('sel-year');
   const currentYear = now.getFullYear();
+  const yearDrop = document.getElementById('cs-year-drop');
   for (let y = Math.max(2026, currentYear - 2); y <= currentYear + 2; y++) {
-    const o = document.createElement('option');
-    o.value = y; o.textContent = `${y}년`;
-    if (y === currentYear) o.selected = true;
-    sy.appendChild(o);
+    const el = document.createElement('div');
+    el.className = 'cs-option' + (y === currentYear ? ' selected' : '');
+    el.textContent = y + '년';
+    el.dataset.value = y;
+    el.onclick = () => selectCustomOption('cs-year', y, y + '년');
+    yearDrop.appendChild(el);
   }
-  const sm = document.getElementById('sel-month');
+  document.getElementById('cs-year-label').textContent = currentYear + '년';
+
+  const curMonth = now.getMonth() + 1;
+  const monthDrop = document.getElementById('cs-month-drop');
   for (let m = 1; m <= 12; m++) {
-    const o = document.createElement('option');
-    o.value = m; o.textContent = `${m}월`;
-    if (m === now.getMonth() + 1) o.selected = true;
-    sm.appendChild(o);
+    const el = document.createElement('div');
+    el.className = 'cs-option' + (m === curMonth ? ' selected' : '');
+    el.textContent = m + '월';
+    el.dataset.value = m;
+    el.onclick = () => selectCustomOption('cs-month', m, m + '월');
+    monthDrop.appendChild(el);
   }
+  document.getElementById('cs-month-label').textContent = curMonth + '월';
   const today = now.toISOString().split('T')[0];
   document.getElementById('b-date').value = today;
   document.getElementById('s-date').value = today;
@@ -1004,8 +1100,8 @@ function renderTable() {
   const tbody = document.getElementById('record-table');
   const empty = document.getElementById('empty-state');
   tbody.innerHTML = '';
-  const selYear  = parseInt(document.getElementById('sel-year').value);
-  const selMonth = parseInt(document.getElementById('sel-month').value);
+  const selYear  = window._selYear || new Date().getFullYear();
+  const selMonth = window._selMonth || (new Date().getMonth()+1);
   const ym = `${selYear}-${String(selMonth).padStart(2,'0')}`;
   const y  = String(selYear);
   const searchQuery = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
@@ -1101,8 +1197,8 @@ function renderTable() {
 // ── 통계 ──
 function updateStats() {
   renderTable();
-  const selYear  = parseInt(document.getElementById('sel-year').value);
-  const selMonth = parseInt(document.getElementById('sel-month').value);
+  const selYear  = window._selYear || new Date().getFullYear();
+  const selMonth = window._selMonth || (new Date().getMonth()+1);
   const ym = `${selYear}-${String(selMonth).padStart(2,'0')}`;
   const y  = String(selYear);
   let totalReal=0, totalFee=0, yReal=0, yFee=0, mReal=0, mFee=0, yCnt=0, mCnt=0;
@@ -1449,6 +1545,9 @@ let splitRowId = 0;
 
 function addSplitRow(type) {
   const container = document.getElementById(`${type}-split-rows`);
+  if (container.querySelectorAll('.split-row').length >= 10) {
+    showToast('⚠️ 최대 10행까지 추가할 수 있어요!', 3000); return;
+  }
   const id = ++splitRowId;
   const row = document.createElement('div');
   row.className = 'split-row';
